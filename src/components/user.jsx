@@ -3,7 +3,7 @@ import Bookmark from "./bookmark";
 import Quality from "./quality";
 
 const User = (props) => {
-  const {user, handleBookmark} = props;
+  const { user, handleBookmark } = props;
   return (
     <tr>
       <td>{user.name}</td>
@@ -15,11 +15,14 @@ const User = (props) => {
       <td>{user.profession.name}</td>
       <td>{user.completedMeetings}</td>
       <td>{user.rate}</td>
-      <td className='text-center pointer'>
+      <td className="text-center pointer">
         <Bookmark user={user} onBookmark={handleBookmark} />
       </td>
       <td>
-        <button className='btn btn-danger' onClick={() => props.handleDeletion(user._id)}>
+        <button
+          className="btn btn-danger"
+          onClick={() => props.handleDeletion(user._id)}
+        >
           delete
         </button>
       </td>
