@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import API from "../api/index";
 
 import SearchStatus from "./searchStatus";
@@ -11,13 +11,13 @@ const Users = () => {
   const [users, setUsers] = useState(apiUsers);
 
   const headers = [
-    {text: "Имя", bClass: "col-3"},
-    {text: "Качества", bClass: "col-3"},
-    {text: "Профессия", bClass: "col"},
-    {text: "Встретился, раз", bClass: "col"},
-    {text: "Оценка", bClass: "col"},
-    {text: "Избранное", bClass: "col"},
-    {text: "", bClass: "col"},
+    { text: "Имя", bClass: "col-3" },
+    { text: "Качества", bClass: "col-3" },
+    { text: "Профессия", bClass: "col" },
+    { text: "Встретился, раз", bClass: "col" },
+    { text: "Оценка", bClass: "col" },
+    { text: "Избранное", bClass: "col" },
+    { text: "", bClass: "col" }
   ];
 
   function handleDeletion(userId) {
@@ -28,7 +28,7 @@ const Users = () => {
     setUsers((prev) =>
       prev.map((user) => {
         if (user._id === id) {
-          return {...user, bookmark: !user.bookmark};
+          return { ...user, bookmark: !user.bookmark };
         } else {
           return user;
         }
@@ -40,7 +40,7 @@ const Users = () => {
     <>
       <SearchStatus usersCount={users.length} />
       {users[0] && (
-        <table className='table'>
+        <table className="table">
           <thead>
             <tr>
               {headers.map((header) => (
@@ -50,7 +50,12 @@ const Users = () => {
           </thead>
           <tbody>
             {users.map((user) => (
-              <User key={user._id} handleDeletion={handleDeletion} user={user} handleBookmark={handleBookmark} />
+              <User
+                key={user._id}
+                handleDeletion={handleDeletion}
+                user={user}
+                handleBookmark={handleBookmark}
+              />
             ))}
           </tbody>
         </table>
