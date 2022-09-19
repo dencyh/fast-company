@@ -13,6 +13,7 @@ module.exports = {
   rules: {
     quotes: ["error", "double", { allowTemplateLiterals: true }],
     semi: [2, "always"],
-    "space-before-function-paren": ["error", "never"]
+    "space-before-function-paren": ["error", "never"],
+    "multiline-ternary": 0
   }
 };
