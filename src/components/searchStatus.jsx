@@ -1,5 +1,6 @@
 import React from "react";
 import plural from "plural-ru";
+import PropTypes from "prop-types";
 
 const SearchStatus = ({ usersCount }) => {
   function showPeopleCount() {
@@ -19,6 +20,10 @@ const SearchStatus = ({ usersCount }) => {
       </span>
     </h1>
   );
+};
+
+SearchStatus.propTypes = {
+  usersCount: PropTypes.number.isRequired
 };
 
 export default SearchStatus;
