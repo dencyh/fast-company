@@ -1,8 +1,8 @@
 import React from "react";
-import Users from "./components/usersList";
+import UsersList from "./components/usersList";
 
 const App = () => {
-  return <Users />;
+  return <UsersList />;
 };
 
 export default App;

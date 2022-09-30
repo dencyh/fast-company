@@ -2,7 +2,7 @@ import React from "react";
 import plural from "plural-ru";
 import PropTypes from "prop-types";
 
-const SearchStatus = ({ usersCount }) => {
+const PeopleCount = ({ usersCount }) => {
   function showPeopleCount() {
     const subject = plural(usersCount, "человек", "человека", "человек");
     const predicate = plural.verb(usersCount, "тусанет", "тусанут", "тусанет");
@@ -22,8 +22,8 @@ const SearchStatus = ({ usersCount }) => {
   );
 };
 
-SearchStatus.propTypes = {
+PeopleCount.propTypes = {
   usersCount: PropTypes.number.isRequired
 };
 
-export default SearchStatus;
+export default PeopleCount;
