@@ -1,23 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import API from "../api/index";
 
-import SearchStatus from "./searchStatus";
+import PeopleCount from "./peopleCount";
 import User from "./user";
 import UserHeader from "./usersHeader";
 import Pagination from "./pagination";
 
 import { paginate } from "../utils/paginate";
+import GroupList from "./groupList";
+import Loader from "./loader";
 
-const apiUsers = API.users.fetchAll();
+const UsersList = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [professions, setProfessions] = useState(null);
+  const [selectedProf, setSelectedProf] = useState(null);
 
-const Users = () => {
-  const [users, setUsers] = useState(apiUsers);
-
-  const usersCount = users.length;
   const pageSize = 4;
   const [currentPage, setCurrentPage] = useState(1);
 
-  const usersCropped = paginate(users, currentPage, pageSize);
+  function clearFilters() {
+    setSelectedProf(null);
+  }
+
+  const filteredUsers = selectedProf
+    ? users.filter((user) => user.profession === selectedProf)
+    : users;
+  const usersCount = filteredUsers?.length || 0;
+  const usersCropped = paginate(filteredUsers, currentPage, pageSize);
+
+  useEffect(() => {
+    setIsLoading(true);
+    API.users
+      .fetchAll()
+      .then((data) => setUsers(data))
+      .finally(() => setIsLoading(false));
+
+    API.professions.fetchAll().then((data) => setProfessions(data));
+  }, []);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedProf]);
 
   const headers = [
     { text: "Имя", bClass: "col-3" },
@@ -57,39 +80,63 @@ const Users = () => {
     }
   }
 
+  function handleProfessionSelect(option) {
+    if (selectedProf?._id === option._id) {
+      setSelectedProf(null);
+    } else {
+      setSelectedProf(option);
+    }
+  }
+
   return (
-    <>
-      <SearchStatus usersCount={usersCount} />
-      {users[0] && (
-        <table className="table">
-          <thead>
-            <tr>
-              {headers.map((header) => (
-                <UserHeader key={header.text} header={header} />
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {usersCropped.map((user) => (
-              <User
-                key={user._id}
-                user={user}
-                handleDeletion={handleDeletion}
-                handleBookmark={handleBookmark}
-              />
-            ))}
-          </tbody>
-        </table>
+    <div className="d-flex container">
+      {professions && (
+        <div className="d-flex flex-column p-4 mt-5">
+          <GroupList
+            items={professions}
+            onItemSelect={handleProfessionSelect}
+            selectedItem={selectedProf}
+          />
+          <button className="btn btn-secondary mt-2" onClick={clearFilters}>
+            Очистить
+          </button>
+        </div>
       )}
-      <Pagination
-        itemsCount={usersCount}
-        pageSize={pageSize}
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
-        onPageNavigation={handlePageNavigation}
-      />
-    </>
+      <div className="d-flex flex-column w-100">
+        {isLoading ? <Loader /> : <PeopleCount usersCount={usersCount} />}
+        {filteredUsers[0] && (
+          <table className="table">
+            <thead>
+              <tr>
+                {headers.map((header) => (
+                  <UserHeader key={header.text} header={header} />
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {usersCropped.map((user) => (
+                <User
+                  key={user._id}
+                  user={user}
+                  handleDeletion={handleDeletion}
+                  handleBookmark={handleBookmark}
+                />
+              ))}
+            </tbody>
+          </table>
+        )}
+        <div className="d-flex justify-content-center">
+          <Pagination
+            itemsCount={usersCount}
+            pageSize={pageSize}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            onPageNavigation={handlePageNavigation}
+          />
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default Users;
+export default UsersList;
