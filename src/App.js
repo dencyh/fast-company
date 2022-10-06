@@ -1,8 +1,8 @@
 import React from "react";
-import UsersList from "./components/usersList";
+import UsersPage from "./components/usersPage";
 
 const App = () => {
-  return <UsersList />;
+  return <UsersPage />;
 };
 
 export default App;

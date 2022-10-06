@@ -2,21 +2,22 @@ import React, { useState, useEffect } from "react";
 import API from "../api/index";
 
 import PeopleCount from "./peopleCount";
-import User from "./user";
-import UserHeader from "./usersHeader";
 import Pagination from "./pagination";
 
 import { paginate } from "../utils/paginate";
 import GroupList from "./groupList";
 import Loader from "./loader";
+import UserTable from "./userTable";
+import _ from "lodash";
 
-const UsersList = () => {
+const UsersPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [professions, setProfessions] = useState(null);
   const [selectedProf, setSelectedProf] = useState(null);
+  const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });
 
-  const pageSize = 4;
+  const pageSize = 6;
   const [currentPage, setCurrentPage] = useState(1);
 
   function clearFilters() {
@@ -26,8 +27,11 @@ const UsersList = () => {
   const filteredUsers = selectedProf
     ? users.filter((user) => user.profession === selectedProf)
     : users;
+
+  const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order]);
+
   const usersCount = filteredUsers?.length || 0;
-  const usersCropped = paginate(filteredUsers, currentPage, pageSize);
+  const usersCropped = paginate(sortedUsers, currentPage, pageSize);
 
   useEffect(() => {
     setIsLoading(true);
@@ -41,16 +45,6 @@ const UsersList = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedProf]);
-
-  const headers = [
-    { text: "Имя", bClass: "col-3" },
-    { text: "Качества", bClass: "col-3" },
-    { text: "Профессия", bClass: "col" },
-    { text: "Встретился, раз", bClass: "col" },
-    { text: "Оценка", bClass: "col" },
-    { text: "Избранное", bClass: "col" },
-    { text: "", bClass: "col" }
-  ];
 
   function handleDeletion(userId) {
     setUsers(users.filter((user) => user._id !== userId));
@@ -88,6 +82,10 @@ const UsersList = () => {
     }
   }
 
+  function handleSort(item) {
+    setSortBy(item);
+  }
+
   return (
     <div className="d-flex container">
       {professions && (
@@ -105,25 +103,13 @@ const UsersList = () => {
       <div className="d-flex flex-column w-100">
         {isLoading ? <Loader /> : <PeopleCount usersCount={usersCount} />}
         {filteredUsers[0] && (
-          <table className="table">
-            <thead>
-              <tr>
-                {headers.map((header) => (
-                  <UserHeader key={header.text} header={header} />
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {usersCropped.map((user) => (
-                <User
-                  key={user._id}
-                  user={user}
-                  handleDeletion={handleDeletion}
-                  handleBookmark={handleBookmark}
-                />
-              ))}
-            </tbody>
-          </table>
+          <UserTable
+            data={usersCropped}
+            onSort={handleSort}
+            selectedSort={sortBy}
+            handleDeletion={handleDeletion}
+            handleBookmark={handleBookmark}
+          />
         )}
         <div className="d-flex justify-content-center">
           <Pagination
@@ -139,4 +125,4 @@ const UsersList = () => {
   );
 };
 
-export default UsersList;
+export default UsersPage;
