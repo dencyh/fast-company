@@ -3,17 +3,6 @@ import UserHeader from "./tableHeader";
 import PropTypes from "prop-types";
 
 const TableHeaders = ({ columns, onSort, selectedSort }) => {
-  const handleSort = (item) => {
-    if (!item) return;
-    if (selectedSort.path === item) {
-      onSort({
-        ...selectedSort,
-        order: selectedSort.order === "asc" ? "desc" : "asc"
-      });
-    } else {
-      onSort({ path: item, order: "asc" });
-    }
-  };
   return (
     <thead>
       <tr>
@@ -21,7 +10,8 @@ const TableHeaders = ({ columns, onSort, selectedSort }) => {
           <UserHeader
             key={columns[key].text + index}
             column={columns[key]}
-            onSort={handleSort}
+            onSort={onSort}
+            selectedSort={selectedSort}
           />
         ))}
       </tr>
