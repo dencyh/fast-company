@@ -5,6 +5,7 @@ import QualitiesList from "./qualitiesList";
 import Table from "./table";
 import TableBody from "./tableBody";
 import TableHeaders from "./tableHeaders";
+import { Link } from "react-router-dom";
 
 const UserTable = ({
   data,
@@ -14,7 +15,12 @@ const UserTable = ({
   handleDeletion
 }) => {
   const columns = [
-    { text: "Имя", bClass: "col-3", path: "name" },
+    {
+      text: "Имя",
+      bClass: "col-3",
+      path: "name",
+      component: (user) => <Link to={`/users/${user._id}`}>{user.name}</Link>
+    },
     {
       text: "Качества",
       bClass: "col-3",

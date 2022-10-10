@@ -150,6 +150,16 @@ const fetchAll = () =>
     }, 500);
   });
 
+const fetchById = (id) =>
+  new Promise((resolve, reject) => {
+    window.setTimeout(function () {
+      const user = users.find((user) => user._id === id);
+      if (!user) reject(new Error("Пользователь не найден"));
+      resolve(user);
+    }, 500);
+  });
+
 export default {
-  fetchAll
+  fetchAll,
+  fetchById
 };

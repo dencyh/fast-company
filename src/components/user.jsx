@@ -1,58 +1,26 @@
-import React from "react";
-import Bookmark from "./bookmark";
-import Quality from "./quality";
-import PropTypes, { string } from "prop-types";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import API from "../api";
+import Loader from "./loader";
+import UserCard from "./userCard";
 
-const User = ({ user, handleBookmark, handleDeletion }) => {
-  return (
-    <>
-      <tr>
-        <td>{user.name}</td>
-        <td>
-          {user.qualities.map((quality) => (
-            <Quality key={quality._id} quality={quality} />
-          ))}
-        </td>
-        <td>{user.profession.name}</td>
-        <td>{user.completedMeetings}</td>
-        <td>{user.rate}</td>
-        <td className="text-center pointer">
-          <Bookmark user={user} onBookmark={handleBookmark} />
-        </td>
-        <td>
-          <button
-            className="btn btn-danger"
-            onClick={() => handleDeletion(user._id)}
-          >
-            delete
-          </button>
-        </td>
-      </tr>
-    </>
-  );
-};
+const User = () => {
+  const { id } = useParams();
+  const [user, setUser] = useState();
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState();
 
-User.propTypes = {
-  user: PropTypes.shape({
-    _id: string,
-    name: string,
-    profession: PropTypes.shape({
-      _id: PropTypes.string,
-      name: PropTypes.string
-    }),
-    qualities: PropTypes.arrayOf(
-      PropTypes.shape({
-        _id: PropTypes.string,
-        name: PropTypes.string,
-        color: PropTypes.string
-      })
-    ),
-    completedMeetings: PropTypes.number,
-    rate: PropTypes.number,
-    bookmark: PropTypes.bool
-  }).isRequired,
-  handleBookmark: PropTypes.func.isRequired,
-  handleDeletion: PropTypes.func.isRequired
+  useEffect(() => {
+    API.users
+      .fetchById(id)
+      .then((data) => setUser(data))
+      .catch((e) => console.log(setError(e)))
+      .finally(() => setIsLoading(false));
+  }, [id]);
+
+  if (error) return <p className="badge bg-danger fs-5">{error.toString()}</p>;
+  if (isLoading || !user) return <Loader />;
+  return <UserCard user={user} />;
 };
 
 export default User;
