@@ -9,6 +9,7 @@ import GroupList from "./groupList";
 import Loader from "./loader";
 import UserTable from "./userTable";
 import _ from "lodash";
+import TextField from "./textField";
 
 const UsersPage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,9 +25,22 @@ const UsersPage = () => {
     setSelectedProf(null);
   }
 
-  const filteredUsers = selectedProf
+  const [query, setQuery] = useState("");
+  const filterByQuery = () =>
+    users.filter((user) =>
+      user.name.toLowerCase().includes(query.toLowerCase())
+    );
+
+  const filteredUsers = query
+    ? filterByQuery()
+    : selectedProf
     ? users.filter((user) => user.profession === selectedProf)
     : users;
+
+  const handleSearch = (e) => {
+    setSelectedProf(null);
+    setQuery(e.target.value);
+  };
 
   const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order]);
 
@@ -79,6 +93,7 @@ const UsersPage = () => {
       setSelectedProf(null);
     } else {
       setSelectedProf(option);
+      setQuery("");
     }
   }
 
@@ -101,7 +116,19 @@ const UsersPage = () => {
         </div>
       )}
       <div className="d-flex flex-column w-100">
-        {isLoading ? <Loader /> : <PeopleCount usersCount={usersCount} />}
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <>
+            <PeopleCount usersCount={usersCount} />
+            <TextField
+              placeholder="Поиск по имени"
+              name="search"
+              onChange={handleSearch}
+              value={query}
+            />
+          </>
+        )}
         {filteredUsers[0] && (
           <UserTable
             data={usersCropped}

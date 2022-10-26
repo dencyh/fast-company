@@ -14,7 +14,7 @@ const TextField = ({ label, type, name, value, onChange, error, ...rest }) => {
       </label>
       <div className="input-group">
         <input
-          className={`form-control ${error ? "is-invalid" : "is-valid"}`}
+          className={`form-control ${error ? "is-invalid" : ""}`}
           type={showPassword ? "text" : type}
           id={name}
           name={name}
@@ -47,8 +47,8 @@ TextField.defaultProps = {
 };
 
 TextField.propTypes = {
-  label: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired,
+  label: PropTypes.string,
+  type: PropTypes.string,
   name: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
