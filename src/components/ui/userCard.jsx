@@ -1,6 +1,6 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import QualitiesList from "./qualitiesList";
+import QualitiesList from "./qualities/qualitiesList";
 import PropTypes from "prop-types";
 
 const UserCard = ({ user }) => {

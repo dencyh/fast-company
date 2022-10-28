@@ -1,95 +1,41 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useParams } from "react-router-dom";
 import Layout from ".";
-import TextField from "../components/textField";
-import { validator } from "../utils/validator";
+import LoginForm from "../components/ui/loginForm";
+import SignupForm from "../components/ui/signupForm";
 
 const Login = () => {
-  const [values, setValues] = useState({
-    email: "",
-    password: ""
-  });
-
-  const [errors, setErrors] = useState({});
-
-  const handleChange = (e) => {
-    setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const { type } = useParams();
+  const [formType, setFormType] = useState(type === "signup" ? type : "login");
+  const toggleFormType = () => {
+    setFormType((prev) => (prev === "signup" ? "login" : "signup"));
   };
-
-  const validatorConfig = {
-    email: {
-      isRequired: {
-        message: "Поле не может быть пустым"
-      },
-      isEmail: {
-        message: "Некорректная эл. почта"
-      }
-    },
-    password: {
-      isRequired: {
-        message: "Поле не может быть пустым"
-      },
-      isCapitalSymbol: {
-        message: "Пароль должен содержать минимум одну заглавную букву"
-      },
-      isDigitSymbol: {
-        message: "Пароль должен содержать минимум одну цифру"
-      },
-      min: {
-        message: "Пароль должен состояить минимум из 8 символов",
-        value: 8
-      }
-    }
-  };
-
-  useEffect(() => {
-    validate();
-  }, [values]);
-
-  const validate = () => {
-    const errors = validator(values, validatorConfig);
-    setErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const isValid = validate();
-    if (!isValid) return console.log("Error");
-    console.log(values);
-  };
-
-  const isValid = Object.keys(errors).length === 0;
-
   return (
     <Layout>
       <div className="mt-5 col-md-5 offset-md-3 shadow p-5">
-        <h3 className="mb-4">Login</h3>
-        <form onSubmit={handleSubmit}>
-          <TextField
-            label="Email"
-            name="email"
-            type="text"
-            value={values.email}
-            onChange={handleChange}
-            error={errors.email}
-            placeholder="Your email"
-          />
-          <TextField
-            label="Password"
-            name="password"
-            type="password"
-            value={values.password}
-            onChange={handleChange}
-            error={errors.password}
-            placeholder="Your password"
-          />
-          <button
-            type="sumbit"
-            className={`btn btn-primary ${!isValid && "disabled"}`}
-          >
-            Sumbit
-          </button>
-        </form>
+        {formType === "signup" ? (
+          <>
+            <h3 className="mb-4">Регистрация</h3>
+            <SignupForm />
+            <p className="mt-4">
+              Уже есть аккаунт?{" "}
+              <a role="button" onClick={toggleFormType}>
+                Войти
+              </a>
+            </p>
+          </>
+        ) : (
+          <>
+            <h3 className="mb-4">Войти</h3>
+            <LoginForm />
+            <p className="mt-4">
+              Нет аккаунта?{" "}
+              <a role="button" onClick={toggleFormType}>
+                Регистрация
+              </a>
+            </p>
+          </>
+        )}
       </div>
     </Layout>
   );

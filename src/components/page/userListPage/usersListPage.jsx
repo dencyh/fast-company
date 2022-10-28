@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
-import API from "../api/index";
+import API from "../../../api/index";
 
-import PeopleCount from "./peopleCount";
-import Pagination from "./pagination";
+import PeopleCount from "../../ui/peopleCount";
+import Pagination from "../../common/pagination";
 
-import { paginate } from "../utils/paginate";
-import GroupList from "./groupList";
-import Loader from "./loader";
-import UserTable from "./userTable";
+import { paginate } from "../../../utils/paginate";
+import GroupList from "../../common/groupList";
+import Loader from "../../common/loader";
+import UserTable from "../../ui/userTable";
 import _ from "lodash";
-import TextField from "./textField";
+import TextField from "../../common/forms/textField";
 
-const UsersPage = () => {
+const UsersListPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [professions, setProfessions] = useState(null);
@@ -101,6 +101,7 @@ const UsersPage = () => {
     setSortBy(item);
   }
 
+  if (!professions) return <Loader />;
   return (
     <div className="d-flex container">
       {professions && (
@@ -152,4 +153,4 @@ const UsersPage = () => {
   );
 };
 
-export default UsersPage;
+export default UsersListPage;

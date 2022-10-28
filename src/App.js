@@ -8,7 +8,7 @@ const App = () => {
   return (
     <>
       <Route path="/users" component={Users} />
-      <Route path="/login" component={Login} />
+      <Route path="/auth/:type?" component={Login} />
       <Route path="/" exact component={Main} />
     </>
   );

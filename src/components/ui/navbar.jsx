@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 
 const navItems = [
   { path: "/", title: "main" },
-  { path: "/login", title: "login" },
+  { path: "/auth", title: "login" },
   { path: "/users", title: "users" }
 ];
 

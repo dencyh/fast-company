@@ -1,14 +1,14 @@
 import React from "react";
 import { Route } from "react-router-dom";
 import Layout from ".";
-import User from "../components/user";
-import UsersPage from "../components/usersPage";
+import UserPage from "../components/page/userPage";
+import UsersListPage from "../components/page/userListPage";
 
 const Users = () => {
   return (
     <Layout>
-      <Route path="/users/" exact component={UsersPage} />
-      <Route path="/users/:id" component={User} />
+      <Route path="/users/" exact component={UsersListPage} />
+      <Route path="/users/:id" component={UserPage} />
     </Layout>
   );
 };

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import API from "../api";
-import Loader from "./loader";
-import UserCard from "./userCard";
+import API from "../../../api";
+import Loader from "../../common/loader";
+import UserCard from "../../ui/userCard";
 
 const User = () => {
   const { id } = useParams();
