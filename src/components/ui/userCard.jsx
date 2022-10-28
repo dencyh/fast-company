@@ -1,13 +1,17 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import QualitiesList from "./qualities/qualitiesList";
 import PropTypes from "prop-types";
 
 const UserCard = ({ user }) => {
   if (!user) return null;
   const history = useHistory();
-  const handleRedirrect = () => {
+  const { id } = useParams();
+  const handleBack = () => {
     history.push("/users");
+  };
+  const handleEdit = () => {
+    history.push(`/users/${id}/edit`);
   };
   return (
     <div className="shadow p-3 my-4 bg-white w-25 rounded">
@@ -18,12 +22,20 @@ const UserCard = ({ user }) => {
       </div>
       <p>Встретился, раз: {user.completedMeetings}</p>
       <h3>Рейтинг: {user.rate}</h3>
-      <button
-        className="btn btn-primary my-2"
-        onClick={() => handleRedirrect()}
-      >
-        Все пользователи
-      </button>
+      <div className="d-flex">
+        <button
+          className="btn btn-light my-2 col-4 me-2"
+          onClick={() => handleBack()}
+        >
+          Назад
+        </button>
+        <button
+          className="btn btn-primary my-2 col-6"
+          onClick={() => handleEdit()}
+        >
+          Редактировать
+        </button>
+      </div>
     </div>
   );
 };

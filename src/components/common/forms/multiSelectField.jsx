@@ -19,7 +19,7 @@ const MultiSelectField = ({
     optionsArray = [{ label: "Выбрать все", value: "all" }, ...optionsArray];
   }
 
-  const [values, setValues] = useState([]);
+  const [values, setValues] = useState(defaultValue || []);
 
   const handleChange = (e) => {
     const allSelected = e.find((option) => option.value === "all");
