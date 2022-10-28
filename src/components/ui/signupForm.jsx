@@ -4,25 +4,45 @@ import { validator } from "../../utils/validator";
 import API from "../../api";
 import SelectField from "../common/forms/selectField";
 import RadioField from "../common/forms/radioField";
-import Select from "react-select";
+import MultiSelectField from "../common/forms/multiSelectField";
+import CheckboxField from "../common/forms/checkboxField";
 
 const SignupForm = () => {
   const [values, setValues] = useState({
     email: "",
     password: "",
     profession: "",
-    sex: "male"
+    sex: "male",
+    qualities: [],
+    licence: false
   });
 
   const [errors, setErrors] = useState({});
 
   const [professions, setProfessions] = useState([]);
+  const [qualities, setQualities] = useState([]);
   useEffect(() => {
-    API.professions.fetchAll().then((data) => setProfessions(data));
+    API.professions.fetchAll().then((data) =>
+      setProfessions(
+        Object.keys(data).map((professionName) => ({
+          label: data[professionName].name,
+          value: data[professionName]._id
+        }))
+      )
+    );
+    API.qualities.fetchAll().then((data) =>
+      setQualities(
+        Object.keys(data).map((optionName) => ({
+          label: data[optionName].name,
+          value: data[optionName]._id,
+          color: data[optionName].color
+        }))
+      )
+    );
   }, []);
 
-  const handleChange = (e) => {
-    setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleChange = (name, value) => {
+    setValues((prev) => ({ ...prev, [name]: value }));
   };
 
   const validatorConfig = {
@@ -53,6 +73,11 @@ const SignupForm = () => {
       isRequired: {
         message: "Необходимо выбрать профессию"
       }
+    },
+    licence: {
+      isRequired: {
+        message: "Необходимо принять Пользовательское соглашение"
+      }
     }
   };
 
@@ -66,11 +91,38 @@ const SignupForm = () => {
     return Object.keys(errors).length === 0;
   };
 
+  const getProfessionById = (id) => {
+    for (const prof of professions) {
+      if (prof.value === id) {
+        return { _id: prof.value, name: prof.label };
+      }
+    }
+  };
+  const getQualities = (elements) => {
+    const qualitiesArray = [];
+    for (const elem of elements) {
+      for (const quality in qualities) {
+        if (elem.value === qualities[quality].value) {
+          qualitiesArray.push({
+            _id: qualities[quality].value,
+            name: qualities[quality].label,
+            color: qualities[quality].color
+          });
+        }
+      }
+    }
+    return qualitiesArray;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const isValid = validate();
-    if (!isValid) return console.log("Error");
-    console.log(values);
+    if (!isValid) return;
+    console.log({
+      ...values,
+      profession: getProfessionById(values.profession),
+      qualities: getQualities(values.qualities)
+    });
   };
 
   const isValid = Object.keys(errors).length === 0;
@@ -94,6 +146,7 @@ const SignupForm = () => {
       />
       <SelectField
         label="Профессия"
+        name="profession"
         defaultOption="Выбрать..."
         value={values.profession}
         error={errors.profession}
@@ -102,6 +155,7 @@ const SignupForm = () => {
       />
       <RadioField
         name="sex"
+        label="Выбрать пол"
         options={[
           { name: "Male", value: "male" },
           { name: "Female", value: "female" },
@@ -110,13 +164,23 @@ const SignupForm = () => {
         value={values.sex}
         onChange={handleChange}
       />
-      <Select
-        isMulti
-        name="colors"
-        options={professions}
-        className="basic-multi-select"
-        classNamePrefix="select"
+      <MultiSelectField
+        defaultValue={values.qualities}
+        options={qualities}
+        onChange={handleChange}
+        name="qualities"
+        selectAll="Выбрать все"
+        label="Выбрать качества"
       />
+
+      <CheckboxField
+        value={values.licence}
+        onChange={handleChange}
+        name="licence"
+        error={errors.licence}
+      >
+        Я принимаю условия <a className="link">Пользовательского соглашения</a>
+      </CheckboxField>
 
       <button
         type="sumbit"

@@ -3,37 +3,37 @@ import PropTypes from "prop-types";
 
 const SelectField = ({
   label,
+  name,
   value,
   onChange,
   defaultOption,
   options,
   error
 }) => {
-  const optionsArr =
+  const optionsArray =
     !Array.isArray(options) && typeof options === "object"
-      ? Object.keys(options).map((optionName) => ({
-          name: options[optionName].name,
-          value: options[optionName]._id
-        }))
+      ? Object.values(options)
       : options;
 
   return (
     <div className="mb-4">
-      <label className="form-label">{label}</label>
+      <label className="form-label" htmlFor={name}>
+        {label}
+      </label>
       <select
         className={`form-select ${error ? "is-invalid" : ""}`}
-        id="validationCustom04"
-        name="profession"
+        id={name}
+        name={name}
         value={value}
-        onChange={onChange}
+        onChange={(e) => onChange(name, e.target.value)}
       >
         <option disabled value="">
           {defaultOption}
         </option>
-        {optionsArr &&
-          optionsArr.map((option) => (
-            <option key={option.value} value={option.name}>
-              {option.name}
+        {optionsArray.length > 0 &&
+          optionsArray.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
             </option>
           ))}
       </select>
@@ -44,6 +44,7 @@ const SelectField = ({
 
 SelectField.propTypes = {
   label: PropTypes.string,
+  name: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
   options: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired,
   defaultOption: PropTypes.string,

@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { validator } from "../../utils/validator";
+import CheckboxField from "../common/forms/checkboxField";
 import TextField from "../common/forms/textField";
 
 const LoginForm = (props) => {
   const [values, setValues] = useState({
     email: "",
-    password: ""
+    password: "",
+    keepLogged: false
   });
 
   const [errors, setErrors] = useState({});
 
-  const handleChange = (e) => {
-    setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleChange = (name, value) => {
+    setValues((prev) => ({ ...prev, [name]: value }));
   };
 
   const validatorConfig = {
@@ -46,6 +48,7 @@ const LoginForm = (props) => {
 
   const validate = () => {
     const errors = validator(values, validatorConfig);
+
     setErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -76,6 +79,14 @@ const LoginForm = (props) => {
         onChange={handleChange}
         error={errors.password}
       />
+
+      <CheckboxField
+        value={values.keepLogged}
+        onChange={handleChange}
+        name="keepLogged"
+      >
+        Оставаться в системе
+      </CheckboxField>
       <button
         type="sumbit"
         className={`btn btn-primary ${!isValid && "disabled"}`}

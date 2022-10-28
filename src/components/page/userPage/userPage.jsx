@@ -12,7 +12,7 @@ const User = () => {
 
   useEffect(() => {
     API.users
-      .fetchById(id)
+      .getById(id)
       .then((data) => setUser(data))
       .catch((e) => console.log(setError(e)))
       .finally(() => setIsLoading(false));

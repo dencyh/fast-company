@@ -15,6 +15,8 @@ module.exports = {
     semi: [2, "always"],
     "space-before-function-paren": 0,
     "multiline-ternary": 0,
-    "no-unused-vars": 1
+    "no-unused-vars": 1,
+    "prefer-const": 1,
+    "no-prototype-builtins": 1
   }
 };

@@ -12,14 +12,14 @@ const TextField = ({ label, type, name, value, onChange, error, ...rest }) => {
       <label className="form-label" htmlFor={name}>
         {label}
       </label>
-      <div className="input-group">
+      <div className="input-group has-validation">
         <input
           className={`form-control ${error ? "is-invalid" : ""}`}
           type={showPassword ? "text" : type}
           id={name}
           name={name}
           value={value}
-          onChange={(e) => onChange(e)}
+          onChange={(e) => onChange(name, e.target.value)}
           {...rest}
         />
         {type === "password" && (
