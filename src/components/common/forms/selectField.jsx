@@ -25,7 +25,7 @@ const SelectField = ({
         id={name}
         name={name}
         value={value}
-        onChange={(e) => onChange(name, e.target.value)}
+        onChange={(e) => onChange({ name, value: e.target.value })}
       >
         <option disabled value="">
           {defaultOption}

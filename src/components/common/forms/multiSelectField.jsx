@@ -21,14 +21,14 @@ const MultiSelectField = ({
 
   const [values, setValues] = useState(defaultValue || []);
 
-  const handleChange = (e) => {
-    const allSelected = e.find((option) => option.value === "all");
+  const handleChange = (value) => {
+    const allSelected = value.find((option) => option.value === "all");
     if (allSelected) {
       setValues(optionsArray.slice(1));
       onChange(name, optionsArray.slice(1));
     } else {
-      setValues(e);
-      onChange(name, e);
+      setValues(value);
+      onChange({ name, value });
     }
   };
 

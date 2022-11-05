@@ -34,12 +34,12 @@ const UsersListPage = () => {
   const filteredUsers = query
     ? filterByQuery()
     : selectedProf
-    ? users.filter((user) => user.profession === selectedProf)
+    ? users.filter((user) => user.profession._id === selectedProf._id)
     : users;
 
-  const handleSearch = (e) => {
+  const handleSearch = ({ value }) => {
     setSelectedProf(null);
-    setQuery(e.target.value);
+    setQuery(value);
   };
 
   const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order]);

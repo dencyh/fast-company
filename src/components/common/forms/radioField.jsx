@@ -15,7 +15,7 @@ const RadioField = ({ label, name, value, options, onChange }) => {
               id={option.value}
               value={option.value}
               checked={option.value === value}
-              onChange={(e) => onChange(name, e.target.value)}
+              onChange={(e) => onChange({ name, value: e.target.value })}
             />
             <label className="form-check-label" htmlFor={option.value}>
               {option.name}

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 const CheckboxField = ({ name, value, onChange, children, error }) => {
   const handleChange = (e) => {
-    onChange(name, !value);
+    onChange({ name, value: !value });
   };
   return (
     <div className="form-check mb-4">

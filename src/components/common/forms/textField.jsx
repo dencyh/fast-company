@@ -19,7 +19,7 @@ const TextField = ({ label, type, name, value, onChange, error, ...rest }) => {
           id={name}
           name={name}
           value={value}
-          onChange={(e) => onChange(name, e.target.value)}
+          onChange={(e) => onChange({ name, value: e.target.value })}
           {...rest}
         />
         {type === "password" && (
