@@ -12,7 +12,7 @@ const LoginForm = (props) => {
 
   const [errors, setErrors] = useState({});
 
-  const handleChange = (name, value) => {
+  const handleChange = ({ name, value }) => {
     setValues((prev) => ({ ...prev, [name]: value }));
   };
 

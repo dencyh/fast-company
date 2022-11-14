@@ -67,7 +67,7 @@ const EditUserForm = () => {
     );
   }, []);
 
-  const handleChange = (name, value) => {
+  const handleChange = ({ name, value }) => {
     setValues((prev) => ({ ...prev, [name]: value }));
   };
 

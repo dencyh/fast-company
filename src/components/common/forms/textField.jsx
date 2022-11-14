@@ -8,7 +8,7 @@ const TextField = ({ label, type, name, value, onChange, error, ...rest }) => {
   };
 
   return (
-    <div className="mb-3">
+    <div className="mb-4">
       <label className="form-label" htmlFor={name}>
         {label}
       </label>

@@ -17,9 +17,11 @@ const SelectField = ({
 
   return (
     <div className="mb-4">
-      <label className="form-label" htmlFor={name}>
-        {label}
-      </label>
+      {label && (
+        <label className="form-label" htmlFor={name}>
+          {label}
+        </label>
+      )}
       <select
         className={`form-select ${error ? "is-invalid" : ""}`}
         id={name}
