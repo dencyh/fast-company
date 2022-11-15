@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
-import TextField from "../common/forms/textField";
-import { validator } from "../../utils/validator";
-import API from "../../api";
-import SelectField from "../common/forms/selectField";
-import RadioField from "../common/forms/radioField";
-import MultiSelectField from "../common/forms/multiSelectField";
+import TextField from "../../common/forms/textField";
+import { validator } from "../../../utils/validator";
+import API from "../../../api";
+import SelectField from "../../common/forms/selectField";
+import RadioField from "../../common/forms/radioField";
+import MultiSelectField from "../../common/forms/multiSelectField";
 import { useParams, useHistory } from "react-router-dom";
-import Loader from "../common/loader";
+import Loader from "../../common/loader";
 
-const EditUserForm = () => {
+const UserEditPage = () => {
   const { id: userId } = useParams();
   const history = useHistory();
   const [values, setValues] = useState({
@@ -143,68 +143,76 @@ const EditUserForm = () => {
   const isValid = Object.keys(errors).length === 0;
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="col-6 mx-auto mt-4 px-5 py-4 shadow"
-    >
-      {loading ? (
-        <Loader />
-      ) : (
-        <>
-          <TextField
-            label="Имя"
-            name="name"
-            type="text"
-            value={values.name}
-            onChange={handleChange}
-            error={errors.name}
-          />
-          <TextField
-            label="Электронная почта"
-            name="email"
-            type="email"
-            value={values.email}
-            onChange={handleChange}
-            error={errors.email}
-          />
-          <SelectField
-            label="Профессия"
-            name="profession"
-            defaultOption="Выбрать..."
-            value={values.profession}
-            error={errors.profession}
-            options={professions}
-            onChange={handleChange}
-          />
-          <RadioField
-            name="sex"
-            label="Выбрать пол"
-            options={[
-              { name: "Male", value: "male" },
-              { name: "Female", value: "female" },
-              { name: "Other", value: "other" }
-            ]}
-            value={values.sex}
-            onChange={handleChange}
-          />
-          <MultiSelectField
-            defaultValue={values.qualities}
-            options={qualities}
-            onChange={handleChange}
-            name="qualities"
-            selectAll="Выбрать все"
-            label="Выбрать качества"
-          />
-          <button
-            type="sumbit"
-            className={`btn btn-primary ${!isValid ? "disabled" : ""}`}
-          >
-            Обновить
-          </button>
-        </>
-      )}
-    </form>
+    <div className="container mt-4">
+      <button className="btn btn-primary" onClick={() => history.goBack()}>
+        <i className="bi bi-caret-left"></i>
+        Назад
+      </button>
+      <div className="row">
+        <form
+          onSubmit={handleSubmit}
+          className="col-6 mx-auto px-5 py-4 shadow"
+        >
+          {loading ? (
+            <Loader />
+          ) : (
+            <>
+              <TextField
+                label="Имя"
+                name="name"
+                type="text"
+                value={values.name}
+                onChange={handleChange}
+                error={errors.name}
+              />
+              <TextField
+                label="Электронная почта"
+                name="email"
+                type="email"
+                value={values.email}
+                onChange={handleChange}
+                error={errors.email}
+              />
+              <SelectField
+                label="Профессия"
+                name="profession"
+                defaultOption="Выбрать..."
+                value={values.profession}
+                error={errors.profession}
+                options={professions}
+                onChange={handleChange}
+              />
+              <RadioField
+                name="sex"
+                label="Выбрать пол"
+                options={[
+                  { name: "Male", value: "male" },
+                  { name: "Female", value: "female" },
+                  { name: "Other", value: "other" }
+                ]}
+                value={values.sex}
+                onChange={handleChange}
+              />
+              <MultiSelectField
+                defaultValue={values.qualities}
+                options={qualities}
+                onChange={handleChange}
+                name="qualities"
+                selectAll="Выбрать все"
+                label="Выбрать качества"
+              />
+              <button
+                type="sumbit"
+                className={`btn btn-primary ${!isValid ? "disabled" : ""}`}
+              >
+                Обновить
+              </button>
+            </>
+          )}
+        </form>
+      </div>
+    </div>
   );
 };
 
-export default EditUserForm;
+export default UserEditPage;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { formatCommentTime } from "../../../utils/commentTime";
+import { formatCommentTime } from "../../../utils/timeFromNow";
 import API from "../../../api";
 import CommentPlaceholder from "./commentPlaceholder";
 
@@ -15,6 +15,10 @@ const Comment = ({ comment, onDelete }) => {
       .then((data) => setUser(data))
       .finally(() => setLoading(false));
   }, []);
+
+  const handleDelete = async () => {
+    onDelete(comment._id);
+  };
 
   return (
     <div className="bg-light card-body mb-3">
@@ -46,7 +50,7 @@ const Comment = ({ comment, onDelete }) => {
                     </p>
                     <button
                       className="btn btn-sm text-primary d-flex align-items-center"
-                      onClick={() => onDelete()}
+                      onClick={handleDelete}
                     >
                       <i className="bi bi-x-lg"></i>
                     </button>
@@ -67,4 +71,4 @@ Comment.propTypes = {
   comment: PropTypes.object
 };
 
-export default Comment;
+export default React.memo(Comment);
