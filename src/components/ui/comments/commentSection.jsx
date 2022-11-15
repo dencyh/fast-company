@@ -21,19 +21,18 @@ const CommentSection = () => {
     setComments((prev) => prev.filter((comment) => comment._id !== removedId));
   };
 
-  const handleSumbit = (values) => {
+  const handleSubmit = (values) => {
     const newComment = { ...values, pageId };
     console.log(newComment);
     API.comments.add({ ...values, pageId }).then((newComment) => {
       setComments((prev) => [...prev, newComment]);
-      // console.log(newComment);
     });
   };
 
   return (
     <div className="col-md-8">
       <div className="card mb-2">
-        <CommentForm pageId={comments.pageId} onSubmit={handleSumbit} />
+        <CommentForm pageId={comments.pageId} onSubmit={handleSubmit} />
       </div>
 
       <div className="card mb-3">
