@@ -22,8 +22,6 @@ const CommentSection = () => {
   };
 
   const handleSubmit = (values) => {
-    const newComment = { ...values, pageId };
-    console.log(newComment);
     API.comments.add({ ...values, pageId }).then((newComment) => {
       setComments((prev) => [...prev, newComment]);
     });
