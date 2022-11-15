@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-const MeetingsCard = (props) => {
+const MeetingsCard = ({ meetings }) => {
   return (
     <div className="card mb-3">
       <div className="card mb-3">
@@ -10,13 +10,18 @@ const MeetingsCard = (props) => {
             <span>Завершенные встречи</span>
           </h5>
 
-          <h1 className="display-1">125</h1>
+          <h1 className="display-1">{meetings}</h1>
         </div>
       </div>
     </div>
   );
 };
 
-MeetingsCard.propTypes = {};
+MeetingsCard.defaultProps = {
+  meetings: 0
+};
+MeetingsCard.propTypes = {
+  meetings: PropTypes.number.isRequired
+};
 
 export default MeetingsCard;

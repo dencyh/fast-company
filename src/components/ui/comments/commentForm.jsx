@@ -6,16 +6,16 @@ import Loader from "../../common/loader";
 import TextArea from "../../common/forms/textArea";
 import { validator } from "../../../utils/validator";
 
+const initValues = {
+  userId: "",
+  content: ""
+};
+
 const CommentForm = ({ onSubmit }) => {
   const [users, setUsers] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [valid, setValid] = useState(true);
-
-  const initValues = {
-    userId: "",
-    content: ""
-  };
 
   const [values, setValues] = useState(initValues);
 
