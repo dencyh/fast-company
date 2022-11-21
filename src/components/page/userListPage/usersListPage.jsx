@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import API from "../../../api/index";
 
 import PeopleCount from "../../ui/peopleCount";
 import Pagination from "../../common/pagination";
@@ -10,13 +9,16 @@ import Loader from "../../common/loader";
 import UserTable from "../../ui/userTable";
 import _ from "lodash";
 import TextField from "../../common/forms/textField";
+import { useUser } from "../../../hooks/useUsers";
+import { useProfessions } from "../../../hooks/useProfessions";
 
 const UsersListPage = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [users, setUsers] = useState([]);
-  const [professions, setProfessions] = useState(null);
   const [selectedProf, setSelectedProf] = useState(null);
   const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });
+
+  const { users } = useUser();
+
+  const { professions } = useProfessions();
 
   const pageSize = 6;
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,32 +50,24 @@ const UsersListPage = () => {
   const usersCropped = paginate(sortedUsers, currentPage, pageSize);
 
   useEffect(() => {
-    setIsLoading(true);
-    API.users
-      .fetchAll()
-      .then((data) => setUsers(data))
-      .finally(() => setIsLoading(false));
-
-    API.professions.fetchAll().then((data) => setProfessions(data));
-  }, []);
-  useEffect(() => {
     setCurrentPage(1);
   }, [selectedProf]);
 
   function handleDeletion(userId) {
-    setUsers(users.filter((user) => user._id !== userId));
+    console.log(userId);
   }
 
   function handleBookmark(id) {
-    setUsers((prev) =>
-      prev.map((user) => {
-        if (user._id === id) {
-          return { ...user, bookmark: !user.bookmark };
-        } else {
-          return user;
-        }
-      })
-    );
+    // setUsers((prev) =>
+    //   prev.map((user) => {
+    //     if (user._id === id) {
+    //       return { ...user, bookmark: !user.bookmark };
+    //     } else {
+    //       return user;
+    //     }
+    //   })
+    // );
+    console.log(users);
   }
 
   function handlePageChange(page) {
@@ -117,19 +111,13 @@ const UsersListPage = () => {
         </div>
       )}
       <div className="d-flex flex-column w-100">
-        {isLoading ? (
-          <Loader />
-        ) : (
-          <>
-            <PeopleCount usersCount={usersCount} />
-            <TextField
-              placeholder="Поиск по имени"
-              name="search"
-              onChange={handleSearch}
-              value={query}
-            />
-          </>
-        )}
+        <PeopleCount usersCount={usersCount} />
+        <TextField
+          placeholder="Поиск по имени"
+          name="search"
+          onChange={handleSearch}
+          value={query}
+        />
         {filteredUsers[0] && (
           <UserTable
             data={usersCropped}
