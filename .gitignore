@@ -12,10 +12,12 @@
 /build
 
 # misc
+.vscode
 .idea
 .env
 .DS_Store
 .env
+.env.development
 .env.local
 .env.development.local
 .env.test.local
