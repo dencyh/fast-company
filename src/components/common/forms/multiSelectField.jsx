@@ -25,7 +25,7 @@ const MultiSelectField = ({
     const allSelected = value.find((option) => option.value === "all");
     if (allSelected) {
       setValues(optionsArray.slice(1));
-      onChange(name, optionsArray.slice(1));
+      onChange({ name, value: optionsArray.slice(1) });
     } else {
       setValues(value);
       onChange({ name, value });

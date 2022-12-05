@@ -6,6 +6,10 @@ const userService = {
   get: async () => {
     const { data } = await http.get(endpoint);
     return data;
+  },
+  create: async (payload) => {
+    const { data } = await http.put(endpoint + payload._id, payload);
+    return data;
   }
 };
 
