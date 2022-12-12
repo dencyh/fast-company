@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useAuth } from "../../hooks/useAuth";
 import { validator } from "../../utils/validator";
 import CheckboxField from "../common/forms/checkboxField";
 import TextField from "../common/forms/textField";
 
-const LoginForm = (props) => {
-  const [values, setValues] = useState({
-    email: "",
-    password: "",
-    keepLogged: false
-  });
+const initValues = {
+  email: "",
+  password: "",
+  keepLogged: false
+};
+
+const LoginForm = () => {
+  const history = useHistory();
+  const { signIn } = useAuth();
+
+  const [values, setValues] = useState(initValues);
 
   const [errors, setErrors] = useState({});
 
@@ -53,11 +61,17 @@ const LoginForm = (props) => {
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const isValid = validate();
     if (!isValid) return console.log("Error");
     console.log(values);
+    try {
+      await signIn(values);
+      history.push("/");
+    } catch (e) {
+      setValues(initValues);
+    }
   };
 
   const isValid = Object.keys(errors).length === 0;
