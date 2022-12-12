@@ -13,6 +13,7 @@
 
 # misc
 .idea
+.vscode
 .env
 .DS_Store
 .env

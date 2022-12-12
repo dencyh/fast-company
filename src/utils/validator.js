@@ -27,6 +27,10 @@ export function validator(data, config) {
         statusValidate = data.length < config.value;
         break;
       }
+      case "notEmpty": {
+        statusValidate = Array.isArray(data) && data.length < 1;
+        break;
+      }
       default:
         break;
     }

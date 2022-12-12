@@ -8,7 +8,8 @@ const MultiSelectField = ({
   label,
   name,
   selectAll,
-  defaultValue
+  defaultValue,
+  error
 }) => {
   let optionsArray =
     !Array.isArray(options) && typeof options === "object"
@@ -34,7 +35,7 @@ const MultiSelectField = ({
 
   return (
     <div className="mb-4">
-      <label className="form-label">{label}</label>
+      <label className="form-label is-invalid">{label}</label>
       <Select
         styles={{ color: "white" }}
         isMulti
@@ -47,6 +48,7 @@ const MultiSelectField = ({
         classNamePrefix="select"
         onChange={handleChange}
       />
+      <div className="invalid-feedback">{error}</div>
     </div>
   );
 };
@@ -57,7 +59,8 @@ MultiSelectField.propTypes = {
   name: PropTypes.string.isRequired,
   label: PropTypes.string,
   selectAll: PropTypes.string,
-  defaultValue: PropTypes.array
+  defaultValue: PropTypes.array,
+  error: PropTypes.string
 };
 
 export default MultiSelectField;
