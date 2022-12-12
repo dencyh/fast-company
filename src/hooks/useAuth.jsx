@@ -79,6 +79,7 @@ const AuthProvider = ({ children }) => {
 
   async function signIn({ email, password }) {
     const url = "accounts:signInWithPassword";
+
     try {
       const { data } = await httpAuth.post(url, {
         email,
@@ -88,6 +89,7 @@ const AuthProvider = ({ children }) => {
       console.log(data);
       setTokens(data);
       getUserData();
+
     } catch (e) {
       const { code, message } = e.response.data.error;
       if (code === 400) {
@@ -105,6 +107,7 @@ const AuthProvider = ({ children }) => {
   async function createUser(data) {
     try {
       const { content } = await userService.create(data);
+
       setCurrentUser(content);
     } catch (e) {
       errorCatcher(e);
