@@ -3,10 +3,17 @@ import PropTypes from "prop-types";
 import userService from "../services/user.service";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { setTokens } from "../services/localStorage.service";
+import { getAccessToken, setTokens } from "../services/localStorage.service";
+import { randomInt } from "../utils/randomInt";
 
-const httpAuth = axios.create();
-const API_KEY = process.env.REACT_APP_FIREBASE_API_KEY;
+export const API_KEY = process.env.REACT_APP_FIREBASE_API_KEY;
+
+export const httpAuth = axios.create({
+  baseURL: "https://identitytoolkit.googleapis.com/v1/",
+  params: {
+    key: API_KEY
+  }
+});
 
 const AuthContext = React.createContext();
 
@@ -25,24 +32,44 @@ const AuthProvider = ({ children }) => {
     }
   }, [error]);
 
+  async function getUserData() {
+    try {
+      const { content } = await userService.getCurrentUser();
+      setCurrentUser(content);
+    } catch (e) {
+      errorCatcher(e);
+    }
+  }
+
+  useEffect(() => {
+    if (getAccessToken()) {
+      getUserData();
+    }
+  }, []);
+
   async function signUp({ email, password, ...rest }) {
-    const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${API_KEY}`;
+    const url = "accounts:signUp";
     try {
       const { data } = await httpAuth.post(url, {
         email,
         password,
         returnSecureToken: true
       });
-      console.log(data);
       setTokens(data);
-      await createUser({ _id: data.localId, email, ...rest });
+      await createUser({
+        _id: data.localId,
+        email,
+        rate: randomInt(1, 5),
+        completedMeetings: randomInt(0, 200),
+        ...rest
+      });
     } catch (e) {
       // errorCatcher(e);
       const { code, message } = e.response.data.error;
       if (code === 400) {
         if (message === "EMAIL_EXISTS") {
           const errorObject = {
-            email: "Пользователь с такой эл. почтой уже зарегестрирован"
+            email: "Пользователь с такой эл. почтой уже зарегистрирован"
           };
           throw errorObject;
         }
@@ -51,7 +78,8 @@ const AuthProvider = ({ children }) => {
   }
 
   async function signIn({ email, password }) {
-    const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}`;
+    const url = "accounts:signInWithPassword";
+
     try {
       const { data } = await httpAuth.post(url, {
         email,
@@ -60,6 +88,8 @@ const AuthProvider = ({ children }) => {
       });
       console.log(data);
       setTokens(data);
+      getUserData();
+
     } catch (e) {
       const { code, message } = e.response.data.error;
       if (code === 400) {
@@ -76,7 +106,8 @@ const AuthProvider = ({ children }) => {
 
   async function createUser(data) {
     try {
-      const { content } = userService.create(data);
+      const { content } = await userService.create(data);
+
       setCurrentUser(content);
     } catch (e) {
       errorCatcher(e);

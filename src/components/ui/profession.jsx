@@ -9,7 +9,7 @@ const Profession = ({ id }) => {
     return "Loading...";
   }
 
-  return <p>{profession.name}</p>;
+  return <span>{profession.name}</span>;
 };
 
 Profession.propTypes = {

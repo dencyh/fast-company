@@ -1,17 +1,19 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 import cfg from "../config";
+import { httpAuth } from "../hooks/useAuth";
+import { getRefreshToken, getTokenExpiresIn } from "./localStorage.service";
 
 const httpInstance = axios.create({
   baseURL: cfg.API_URL
 });
 
 function transformData(data) {
-  return data
+  return data && !data._id
     ? Object.keys(data).map((key) => ({
         ...data[key]
       }))
-    : [];
+    : data;
 }
 
 httpInstance.interceptors.response.use(
@@ -33,9 +35,19 @@ httpInstance.interceptors.response.use(
 );
 
 httpInstance.interceptors.request.use(
-  (config) => {
+  async (config) => {
     if (cfg.isFirebase) {
       config.url = config.url.replace(/\/$/, "") + ".json";
+
+      const expiresIn = getTokenExpiresIn();
+      const refreshToken = getRefreshToken();
+      if (refreshToken && expiresIn > Date.now()) {
+        const { data } = await httpAuth.post("token", {
+          grant_type: "refresh_token",
+          refresh_token: refreshToken
+        });
+        console.log(data);
+      }
     }
     return config;
   },

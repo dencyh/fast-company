@@ -10,15 +10,16 @@ import { useProfessions } from "../../hooks/useProfessions";
 import { useAuth } from "../../hooks/useAuth";
 import { useHistory } from "react-router-dom";
 
-const SignupForm = () => {
+const SignUpForm = () => {
   const history = useHistory();
   const [values, setValues] = useState({
+    name: "",
     email: "",
     password: "",
     profession: "",
     sex: "male",
     qualities: [],
-    licence: false
+    license: false
   });
 
   const { signUp } = useAuth();
@@ -50,6 +51,15 @@ const SignupForm = () => {
         message: "Некорректная эл. почта"
       }
     },
+    name: {
+      isRequired: {
+        message: "Имя обязательно для заполнения"
+      },
+      min: {
+        message: "Имя должно состоять минимум из 1 буквы",
+        value: 1
+      }
+    },
     password: {
       isRequired: {
         message: "Поле не может быть пустым"
@@ -61,7 +71,7 @@ const SignupForm = () => {
         message: "Пароль должен содержать минимум одну цифру"
       },
       min: {
-        message: "Пароль должен состояить минимум из 8 символов",
+        message: "Пароль должен состоять минимум из 8 символов",
         value: 8
       }
     },
@@ -70,7 +80,12 @@ const SignupForm = () => {
         message: "Необходимо выбрать профессию"
       }
     },
-    licence: {
+    qualities: {
+      notEmpty: {
+        message: "Необходимо выбрать хотя бы одно качество"
+      }
+    },
+    license: {
       isRequired: {
         message: "Необходимо принять Пользовательское соглашение"
       }
@@ -117,6 +132,14 @@ const SignupForm = () => {
         error={errors.email}
       />
       <TextField
+        label="Имя"
+        name="name"
+        type="text"
+        value={values.name}
+        onChange={handleChange}
+        error={errors.name}
+      />
+      <TextField
         label="Пароль"
         name="password"
         type="password"
@@ -151,25 +174,26 @@ const SignupForm = () => {
         name="qualities"
         selectAll="Выбрать все"
         label="Выбрать качества"
+        error={errors.qualities}
       />
 
       <CheckboxField
-        value={values.licence}
+        value={values.license}
         onChange={handleChange}
-        name="licence"
-        error={errors.licence}
+        name="license"
+        error={errors.license}
       >
         Я принимаю условия <a className="link">Пользовательского соглашения</a>
       </CheckboxField>
 
       <button
-        type="sumbit"
+        type="submit"
         className={`btn btn-primary ${!isValid && "disabled"}`}
       >
-        Зарегистроваться
+        Зарегистрироваться
       </button>
     </form>
   );
 };
 
-export default SignupForm;
+export default SignUpForm;
