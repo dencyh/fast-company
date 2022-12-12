@@ -1,6 +1,5 @@
 import React from "react";
 import { Route } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 import { ProfessionsProvider } from "./hooks/useProfessions";
 import { QualitiesProvider } from "./hooks/useQualities";
 import Login from "./layouts/login";

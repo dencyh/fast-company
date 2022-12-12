@@ -1,11 +1,24 @@
 import axios from "axios";
 import { toast } from "react-toastify";
-import { config } from "../config";
+import cfg from "../config";
 
-axios.defaults.baseURL = config.API_URL;
+axios.defaults.baseURL = cfg.API_URL;
+
+function transformData(data) {
+  return data
+    ? Object.keys(data).map((key) => ({
+        ...data[key]
+      }))
+    : [];
+}
 
 axios.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    if (cfg.isFirebase) {
+      res.data = { content: transformData(res.data) };
+    }
+    return res;
+  },
   (e) => {
     const expectedError =
       e.response && e.response.status >= 400 && e.response.status < 500;
@@ -15,6 +28,16 @@ axios.interceptors.response.use(
     }
     return Promise.reject(e);
   }
+);
+
+axios.interceptors.request.use(
+  (config) => {
+    if (cfg.isFirebase) {
+      config.url = config.url.replace(/\/$/, "") + ".json";
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
 );
 
 export const http = {
