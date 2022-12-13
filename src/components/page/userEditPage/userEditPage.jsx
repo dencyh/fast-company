@@ -10,9 +10,11 @@ import { useQualities } from "../../../hooks/useQualities";
 import { useProfessions } from "../../../hooks/useProfessions";
 import { useAuth } from "../../../hooks/useAuth";
 import { selectFormat } from "../../../utils/selectFormat";
+import { toast } from "react-toastify";
 
 const UserEditPage = () => {
   const { id: userId } = useParams();
+  const { updateUser } = useAuth();
   const history = useHistory();
   const [errors, setErrors] = useState({});
   const [values, setValues] = useState({
@@ -92,41 +94,21 @@ const UserEditPage = () => {
     return Object.keys(errors).length === 0;
   };
 
-  // const getProfessionById = (id) => {
-  //   for (const prof of professions) {
-  //     if (prof.value === id) {
-  //       return { _id: prof.value, name: prof.label };
-  //     }
-  //   }
-  // };
-  // const getQualities = (elements) => {
-  //   const qualitiesArray = [];
-  //   for (const elem of elements) {
-  //     for (const quality in qualities) {
-  //       if (elem.value === qualities[quality].value) {
-  //         qualitiesArray.push({
-  //           _id: qualities[quality].value,
-  //           name: qualities[quality].label,
-  //           color: qualities[quality].color
-  //         });
-  //       }
-  //     }
-  //   }
-  //   return qualitiesArray;
-  // };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const isValid = validate();
     if (!isValid) return;
     const updatedUser = {
-      ...values
-      // profession: getProfessionById(values.profession)
-      // qualities: getQualities(values.qualities)
+      ...values,
+      qualities: values.qualities.map((qual) => qual.value)
     };
-    console.log(updatedUser);
 
-    history.replace(`/users/${userId}`);
+    try {
+      await updateUser(updatedUser);
+      history.replace(`/users/${userId}`);
+    } catch (e) {
+      toast.error(e.message);
+    }
   };
 
   const isValid = Object.keys(errors).length === 0;

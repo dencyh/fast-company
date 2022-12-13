@@ -16,7 +16,8 @@ const PersonalInfo = ({ user }) => {
       <div className="card-body">
         {currentUser._id === user._id && (
           <button
-            className="position-absolute top-0 end-0 btn btn-light btn-sm"
+            className="position-absolute top-0 end-0 d-flex justify-content-center align-items middle btn btn-md"
+            style={{ zIndex: 1000 }}
             onClick={handleEdit}
             aria-label="settings button"
           >
@@ -32,8 +33,8 @@ const PersonalInfo = ({ user }) => {
             width="150"
           />
           <div className="mt-3">
-            <h4>{name}</h4>
-            <p className="text-secondary mb-1">{user.profession}</p>
+            <h4>{user.name}</h4>
+            <p className="text-secondary mb-1">{user.profession.name}</p>
             <div className="text-muted">
               <i
                 className="bi bi-caret-down-fill text-primary"

@@ -73,7 +73,8 @@ export const http = {
   get: httpInstance.get,
   post: httpInstance.post,
   put: httpInstance.put,
-  delete: httpInstance.delete
+  delete: httpInstance.delete,
+  patch: httpInstance.patch
 };
 
 export default http;

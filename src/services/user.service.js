@@ -15,6 +15,10 @@ const userService = {
   getCurrentUser: async () => {
     const { data } = await http.get(endpoint + getUserLocalId());
     return data;
+  },
+  updateUser: async (payload) => {
+    const { data } = await http.patch(endpoint + payload._id, payload);
+    return data;
   }
 };
 

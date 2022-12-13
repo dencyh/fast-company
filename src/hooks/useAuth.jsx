@@ -60,7 +60,6 @@ const AuthProvider = ({ children }) => {
   }, []);
 
   async function signUp({ email, password, ...rest }) {
-    console.log("signup");
     const url = "accounts:signUp";
     try {
       const { data } = await httpAuth.post(url, {
@@ -106,14 +105,22 @@ const AuthProvider = ({ children }) => {
       await getUserData();
     } catch (e) {
       const { code, message } = e.response.data.error;
-      if (code === 400) {
-        if (message === "INVALID_PASSWORD") {
-          const errorObject = {
-            message: "Пользователь с такими данными не найден"
-          };
-          errorCatcher(errorObject);
-          throw errorObject;
-        }
+
+      if (
+        code === 400 &&
+        (message === "INVALID_PASSWORD" || message === "EMAIL_NOT_FOUND")
+      ) {
+        const errorObject = {
+          message: "Пользователь с такими данными не найден"
+        };
+        errorCatcher(errorObject);
+        throw errorObject;
+      } else {
+        const errorObject = {
+          message: "Что-то пошло не так"
+        };
+        errorCatcher(errorObject);
+        throw errorObject;
       }
     }
   }
@@ -134,13 +141,42 @@ const AuthProvider = ({ children }) => {
     }
   }
 
+  async function updateEmail(email) {
+    const url = "accounts:update";
+    const { data } = await httpAuth.post(url, {
+      idToken: getAccessToken(),
+      email,
+      returnSecureToken: true
+    });
+    setTokens(data);
+    return data;
+  }
+
+  async function updateUser(payload) {
+    try {
+      if (payload.email !== undefined && payload.email !== currentUser.email) {
+        await updateEmail(payload.email);
+      }
+      const { content } = await userService.updateUser({
+        ...payload,
+        _id: currentUser._id
+      });
+
+      setCurrentUser((prev) => ({ ...prev, ...content }));
+    } catch (e) {
+      throw new Error("Что-то пошло не так");
+    }
+  }
+
   function errorCatcher(error) {
     const { message } = error;
     setError(message);
   }
 
   return (
-    <AuthContext.Provider value={{ signUp, signIn, signOut, currentUser }}>
+    <AuthContext.Provider
+      value={{ signUp, signIn, signOut, currentUser, updateUser }}
+    >
       {loading ? "Loading..." : children}
     </AuthContext.Provider>
   );
