@@ -1,71 +1,58 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import TextField from "../../common/forms/textField";
 import { validator } from "../../../utils/validator";
-import API from "../../../api";
 import SelectField from "../../common/forms/selectField";
 import RadioField from "../../common/forms/radioField";
 import MultiSelectField from "../../common/forms/multiSelectField";
 import { useParams, useHistory } from "react-router-dom";
 import Loader from "../../common/loader";
+import { useQualities } from "../../../hooks/useQualities";
+import { useProfessions } from "../../../hooks/useProfessions";
+import { useAuth } from "../../../hooks/useAuth";
+import { selectFormat } from "../../../utils/selectFormat";
+import { toast } from "react-toastify";
 
 const UserEditPage = () => {
   const { id: userId } = useParams();
+  const { updateUser } = useAuth();
   const history = useHistory();
+  const [errors, setErrors] = useState({});
   const [values, setValues] = useState({
-    name: "noname",
-    email: "no@email.com",
-    profession: "noprof",
-    sex: "male",
+    name: "",
+    email: "",
+    profession: "",
+    sex: "",
     qualities: []
   });
 
-  const [errors, setErrors] = useState({});
+  const { currentUser } = useAuth();
+  if (!currentUser) return <Loader />;
+  const { professions, isLoading: loadingProfessions } = useProfessions();
+  const {
+    qualities,
+    getUserQualities,
+    isLoading: loadingQualities
+  } = useQualities();
 
-  const [loading, setLoading] = useState(false);
+  const professionsTransformed = useMemo(
+    () => selectFormat(professions),
+    [professions]
+  );
 
-  const [professions, setProfessions] = useState([]);
-  const [qualities, setQualities] = useState([]);
+  const qualitiesTransformed = useMemo(
+    () => selectFormat(qualities),
+    [qualities]
+  );
+
   useEffect(() => {
-    setLoading(true);
-    API.users
-      .getById(userId)
-      .then((data) => {
-        const { name, email, profession, sex } = data;
-
-        const qualities = Object.keys(data.qualities).map((optionName) => ({
-          label: data.qualities[optionName].name,
-          value: data.qualities[optionName]._id,
-          color: data.qualities[optionName].color
-        }));
-
-        setValues((prev) => ({
-          ...prev,
-          name,
-          email,
-          profession: profession._id,
-          sex,
-          qualities
-        }));
-      })
-      .finally(() => setLoading(false));
-    API.professions.fetchAll().then((data) =>
-      setProfessions(
-        Object.keys(data).map((professionName) => ({
-          label: data[professionName].name,
-          value: data[professionName]._id
-        }))
-      )
-    );
-    API.qualities.fetchAll().then((data) =>
-      setQualities(
-        Object.keys(data).map((optionName) => ({
-          label: data[optionName].name,
-          value: data[optionName]._id,
-          color: data[optionName].color
-        }))
-      )
-    );
-  }, []);
+    setValues({
+      name: currentUser.name,
+      email: currentUser.email,
+      profession: currentUser.profession,
+      sex: currentUser.sex,
+      qualities: selectFormat(getUserQualities(currentUser.qualities))
+    });
+  }, [qualities]);
 
   const handleChange = ({ name, value }) => {
     setValues((prev) => ({ ...prev, [name]: value }));
@@ -89,6 +76,11 @@ const UserEditPage = () => {
       isRequired: {
         message: "Необходимо выбрать профессию"
       }
+    },
+    qualities: {
+      notEmpty: {
+        message: "Выберите минимум одно качество"
+      }
     }
   };
 
@@ -102,42 +94,21 @@ const UserEditPage = () => {
     return Object.keys(errors).length === 0;
   };
 
-  const getProfessionById = (id) => {
-    for (const prof of professions) {
-      if (prof.value === id) {
-        return { _id: prof.value, name: prof.label };
-      }
-    }
-  };
-  const getQualities = (elements) => {
-    const qualitiesArray = [];
-    for (const elem of elements) {
-      for (const quality in qualities) {
-        if (elem.value === qualities[quality].value) {
-          qualitiesArray.push({
-            _id: qualities[quality].value,
-            name: qualities[quality].label,
-            color: qualities[quality].color
-          });
-        }
-      }
-    }
-    return qualitiesArray;
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const isValid = validate();
     if (!isValid) return;
     const updatedUser = {
       ...values,
-      profession: getProfessionById(values.profession),
-      qualities: getQualities(values.qualities)
+      qualities: values.qualities.map((qual) => qual.value)
     };
-    console.log(updatedUser);
-    API.users.update(userId, updatedUser);
 
-    history.replace(`/users/${userId}`);
+    try {
+      await updateUser(updatedUser);
+      history.replace(`/users/${userId}`);
+    } catch (e) {
+      toast.error(e.message);
+    }
   };
 
   const isValid = Object.keys(errors).length === 0;
@@ -153,7 +124,7 @@ const UserEditPage = () => {
           onSubmit={handleSubmit}
           className="col-6 mx-auto px-5 py-4 shadow"
         >
-          {loading ? (
+          {loadingQualities || loadingProfessions ? (
             <Loader />
           ) : (
             <>
@@ -179,7 +150,7 @@ const UserEditPage = () => {
                 defaultOption="Выбрать..."
                 value={values.profession}
                 error={errors.profession}
-                options={professions}
+                options={professionsTransformed}
                 onChange={handleChange}
               />
               <RadioField
@@ -195,14 +166,15 @@ const UserEditPage = () => {
               />
               <MultiSelectField
                 defaultValue={values.qualities}
-                options={qualities}
+                options={qualitiesTransformed}
                 onChange={handleChange}
                 name="qualities"
                 selectAll="Выбрать все"
                 label="Выбрать качества"
+                error={errors.qualities}
               />
               <button
-                type="sumbit"
+                type="submit"
                 className={`btn btn-primary ${!isValid ? "disabled" : ""}`}
               >
                 Обновить

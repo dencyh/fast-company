@@ -1,31 +1,46 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-
-const navItems = [
-  { path: "/", title: "main" },
-  { path: "/auth", title: "login" },
-  { path: "/users", title: "users" }
-];
+import { useAuth } from "../../hooks/useAuth";
+import NavProfile from "./navProfile";
 
 const Navbar = () => {
+  const { currentUser } = useAuth();
+
   const location = useLocation();
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
-      <div className="container">
-        <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
-          <div className="navbar-nav fs-5">
-            {navItems.map((item) => (
-              <Link
-                className={`nav-link text-capitalize ${
-                  location.pathname === item.path ? "active" : ""
-                }`}
-                key={item.title}
-                to={item.path}
-              >
-                {item.title}
-              </Link>
-            ))}
-          </div>
+      <div className="container fs-5">
+        <div className="navbar-nav">
+          <Link
+            className={`nav-link text-primary ${
+              location.pathname === "/" ? "active" : ""
+            }`}
+            to="/"
+          >
+            Main
+          </Link>
+          <Link
+            className={`nav-link text-primary ${
+              location.pathname === "/users" ? "active" : ""
+            }`}
+            to="/users"
+          >
+            Users
+          </Link>
+        </div>
+        <div className="navbar-nav">
+          {currentUser ? (
+            <NavProfile />
+          ) : (
+            <Link
+              className={`nav-link text-primary ${
+                location.pathname === "/" ? "active" : ""
+              }`}
+              to="/login"
+            >
+              Login
+            </Link>
+          )}
         </div>
       </div>
     </nav>

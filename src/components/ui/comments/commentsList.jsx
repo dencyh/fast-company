@@ -8,7 +8,7 @@ const CommentsList = ({ comments, onDelete }) => {
       <h2>Комментарии</h2>
       <hr />
       {comments
-        .sort((a, b) => b.created_at - a.created_at)
+        .sort((a, b) => b.createdAt - a.createdAt)
         .map((comment) => (
           <Comment key={comment._id} comment={comment} onDelete={onDelete} />
         ))}

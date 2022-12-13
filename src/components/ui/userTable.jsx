@@ -6,13 +6,7 @@ import Table, { TableBody, TableHeaders } from "../common/table";
 import { Link } from "react-router-dom";
 import Profession from "./profession";
 
-const UserTable = ({
-  data,
-  onSort,
-  selectedSort,
-  handleBookmark,
-  handleDeletion
-}) => {
+const UserTable = ({ data, onSort, selectedSort, handleBookmark }) => {
   const columns = [
     {
       text: "Имя",
@@ -42,19 +36,6 @@ const UserTable = ({
       component: (user) => (
         <Bookmark user={user} onBookmark={() => handleBookmark(user._id)} />
       )
-    },
-    {
-      text: "",
-      bClass: "col",
-      path: "",
-      component: (user) => (
-        <button
-          className="btn btn-danger"
-          onClick={() => handleDeletion(user._id)}
-        >
-          delete
-        </button>
-      )
     }
   ];
   return (
@@ -72,8 +53,7 @@ UserTable.propTypes = {
     path: string,
     order: string
   }).isRequired,
-  handleBookmark: PropTypes.func.isRequired,
-  handleDeletion: PropTypes.func.isRequired
+  handleBookmark: PropTypes.func.isRequired
 };
 
 export default UserTable;

@@ -31,3 +31,10 @@ export function getRefreshToken() {
 export function getTokenExpiresIn() {
   return localStorage.getItem(EXPIRES_IN);
 }
+
+export function removeAuthData() {
+  localStorage.removeItem(ACCESS_KEY);
+  localStorage.removeItem(REFRESH_KEY);
+  localStorage.removeItem(EXPIRES_IN);
+  localStorage.removeItem(LOCAL_ID);
+}

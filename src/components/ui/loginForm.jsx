@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { toast } from "react-toastify";
 import { useAuth } from "../../hooks/useAuth";
 import { validator } from "../../utils/validator";
 import CheckboxField from "../common/forms/checkboxField";
@@ -14,6 +13,7 @@ const initValues = {
 
 const LoginForm = () => {
   const history = useHistory();
+
   const { signIn } = useAuth();
 
   const [values, setValues] = useState(initValues);
@@ -44,7 +44,7 @@ const LoginForm = () => {
         message: "Пароль должен содержать минимум одну цифру"
       },
       min: {
-        message: "Пароль должен состояить минимум из 8 символов",
+        message: "Пароль должен состоять минимум из 8 символов",
         value: 8
       }
     }
@@ -65,10 +65,10 @@ const LoginForm = () => {
     e.preventDefault();
     const isValid = validate();
     if (!isValid) return console.log("Error");
-    console.log(values);
     try {
       await signIn(values);
-      history.push("/");
+      const toGo = history.location.state?.from.pathname || "/";
+      history.push(toGo);
     } catch (e) {
       setValues(initValues);
     }
@@ -102,7 +102,7 @@ const LoginForm = () => {
         Оставаться в системе
       </CheckboxField>
       <button
-        type="sumbit"
+        type="submit"
         className={`btn btn-primary ${!isValid && "disabled"}`}
       >
         Войти

@@ -3,8 +3,13 @@ import PropTypes from "prop-types";
 import userService from "../services/user.service";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { getAccessToken, setTokens } from "../services/localStorage.service";
+import {
+  getAccessToken,
+  removeAuthData,
+  setTokens
+} from "../services/localStorage.service";
 import { randomInt } from "../utils/randomInt";
+import { useHistory } from "react-router-dom";
 
 export const API_KEY = process.env.REACT_APP_FIREBASE_API_KEY;
 
@@ -22,7 +27,10 @@ export const useAuth = () => {
 };
 
 const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState({});
+  const [currentUser, setCurrentUser] = useState(null);
+
+  const [loading, setLoading] = useState(true);
+  const history = useHistory();
 
   const [error, setError] = useState(null);
   useEffect(() => {
@@ -38,12 +46,16 @@ const AuthProvider = ({ children }) => {
       setCurrentUser(content);
     } catch (e) {
       errorCatcher(e);
+    } finally {
+      setLoading(false);
     }
   }
 
   useEffect(() => {
     if (getAccessToken()) {
       getUserData();
+    } else {
+      setLoading(false);
     }
   }, []);
 
@@ -61,6 +73,9 @@ const AuthProvider = ({ children }) => {
         email,
         rate: randomInt(1, 5),
         completedMeetings: randomInt(0, 200),
+        image: `https://avatars.dicebear.com/api/avataaars/${(Math.random() + 1)
+          .toString(36)
+          .substring(7)}.svg`,
         ...rest
       });
     } catch (e) {
@@ -86,22 +101,34 @@ const AuthProvider = ({ children }) => {
         password,
         returnSecureToken: true
       });
-      console.log(data);
       setTokens(data);
-      getUserData();
-
+      await getUserData();
     } catch (e) {
       const { code, message } = e.response.data.error;
-      if (code === 400) {
-        if (message === "INVALID_PASSWORD") {
-          const errorObject = {
-            message: "Пользователь с такими данными не найден"
-          };
-          errorCatcher(errorObject);
-          throw errorObject;
-        }
+
+      if (
+        code === 400 &&
+        (message === "INVALID_PASSWORD" || message === "EMAIL_NOT_FOUND")
+      ) {
+        const errorObject = {
+          message: "Пользователь с такими данными не найден"
+        };
+        errorCatcher(errorObject);
+        throw errorObject;
+      } else {
+        const errorObject = {
+          message: "Что-то пошло не так"
+        };
+        errorCatcher(errorObject);
+        throw errorObject;
       }
     }
+  }
+
+  function signOut() {
+    history.push("/");
+    setCurrentUser(null);
+    removeAuthData();
   }
 
   async function createUser(data) {
@@ -114,14 +141,43 @@ const AuthProvider = ({ children }) => {
     }
   }
 
+  async function updateEmail(email) {
+    const url = "accounts:update";
+    const { data } = await httpAuth.post(url, {
+      idToken: getAccessToken(),
+      email,
+      returnSecureToken: true
+    });
+    setTokens(data);
+    return data;
+  }
+
+  async function updateUser(payload) {
+    try {
+      if (payload.email !== undefined && payload.email !== currentUser.email) {
+        await updateEmail(payload.email);
+      }
+      const { content } = await userService.updateUser({
+        ...payload,
+        _id: currentUser._id
+      });
+
+      setCurrentUser((prev) => ({ ...prev, ...content }));
+    } catch (e) {
+      throw new Error("Что-то пошло не так");
+    }
+  }
+
   function errorCatcher(error) {
     const { message } = error;
     setError(message);
   }
 
   return (
-    <AuthContext.Provider value={{ signUp, signIn, currentUser }}>
-      {children}
+    <AuthContext.Provider
+      value={{ signUp, signIn, signOut, currentUser, updateUser }}
+    >
+      {loading ? "Loading..." : children}
     </AuthContext.Provider>
   );
 };

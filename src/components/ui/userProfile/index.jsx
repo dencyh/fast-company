@@ -4,28 +4,29 @@ import PersonalInfo from "./personalInfo";
 import QualitiesCard from "./qualitiesCard";
 import MeetingsCard from "./meetingsCard";
 import CommentSection from "../comments/commentSection";
+import CommentsProvider from "../../../hooks/useComments";
 
-const UserPage = ({ user }) => {
+const UserCard = ({ user }) => {
   if (!user) return null;
-
-  const { _id, name, profession, qualities, completedMeetings, rate } = user;
 
   return (
     <div className="container">
       <div className="row gutters-sm">
         <div className="col-md-4 mb-3">
-          <PersonalInfo {...{ _id, name, profession: profession.name, rate }} />
-          <QualitiesCard qualities={qualities} />
-          <MeetingsCard meetings={completedMeetings} />
+          <PersonalInfo user={user} />
+          <QualitiesCard qualities={user.qualities} />
+          <MeetingsCard meetings={user.completedMeetings} />
         </div>
-        <CommentSection />
+        <CommentsProvider>
+          <CommentSection />
+        </CommentsProvider>
       </div>
     </div>
   );
 };
 
-UserPage.propTypes = {
+UserCard.propTypes = {
   user: PropTypes.object.isRequired
 };
 
-export default UserPage;
+export default UserCard;

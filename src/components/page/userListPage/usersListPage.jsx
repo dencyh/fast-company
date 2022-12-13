@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-
 import PeopleCount from "../../ui/peopleCount";
 import Pagination from "../../common/pagination";
-
 import { paginate } from "../../../utils/paginate";
 import GroupList from "../../common/groupList";
 import Loader from "../../common/loader";
@@ -11,14 +9,15 @@ import _ from "lodash";
 import TextField from "../../common/forms/textField";
 import { useUser } from "../../../hooks/useUsers";
 import { useProfessions } from "../../../hooks/useProfessions";
+import { useAuth } from "../../../hooks/useAuth";
 
 const UsersListPage = () => {
+  const { users } = useUser();
+  const { professions, loading: professionsLoading } = useProfessions();
+  const { currentUser } = useAuth();
+
   const [selectedProf, setSelectedProf] = useState(null);
   const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });
-
-  const { users } = useUser();
-
-  const { professions } = useProfessions();
 
   const pageSize = 6;
   const [currentPage, setCurrentPage] = useState(1);
@@ -28,16 +27,20 @@ const UsersListPage = () => {
   }
 
   const [query, setQuery] = useState("");
-  const filterByQuery = () =>
-    users.filter((user) =>
-      user.name.toLowerCase().includes(query.toLowerCase())
-    );
 
-  const filteredUsers = query
-    ? filterByQuery()
-    : selectedProf
-    ? users.filter((user) => user.profession._id === selectedProf._id)
-    : users;
+  function filterUsers(data) {
+    const filteredUsers = query
+      ? data.filter((user) =>
+          user.name.toLowerCase().includes(query.toLowerCase())
+        )
+      : selectedProf
+      ? data.filter((user) => user.profession._id === selectedProf._id)
+      : data;
+
+    return filteredUsers.filter((user) => user._id !== currentUser._id);
+  }
+
+  const filteredUsers = filterUsers(users);
 
   const handleSearch = ({ value }) => {
     setSelectedProf(null);
@@ -95,7 +98,7 @@ const UsersListPage = () => {
     setSortBy(item);
   }
 
-  if (!professions) return <Loader />;
+  if (!professions && professionsLoading) return <Loader />;
   return (
     <div className="d-flex container">
       {professions && (
