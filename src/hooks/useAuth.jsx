@@ -3,8 +3,13 @@ import PropTypes from "prop-types";
 import userService from "../services/user.service";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { getAccessToken, setTokens } from "../services/localStorage.service";
+import {
+  getAccessToken,
+  removeAuthData,
+  setTokens
+} from "../services/localStorage.service";
 import { randomInt } from "../utils/randomInt";
+import { useHistory } from "react-router-dom";
 
 export const API_KEY = process.env.REACT_APP_FIREBASE_API_KEY;
 
@@ -22,7 +27,10 @@ export const useAuth = () => {
 };
 
 const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState({});
+  const [currentUser, setCurrentUser] = useState(null);
+
+  const [loading, setLoading] = useState(true);
+  const history = useHistory();
 
   const [error, setError] = useState(null);
   useEffect(() => {
@@ -38,16 +46,21 @@ const AuthProvider = ({ children }) => {
       setCurrentUser(content);
     } catch (e) {
       errorCatcher(e);
+    } finally {
+      setLoading(false);
     }
   }
 
   useEffect(() => {
     if (getAccessToken()) {
       getUserData();
+    } else {
+      setLoading(false);
     }
   }, []);
 
   async function signUp({ email, password, ...rest }) {
+    console.log("signup");
     const url = "accounts:signUp";
     try {
       const { data } = await httpAuth.post(url, {
@@ -61,6 +74,9 @@ const AuthProvider = ({ children }) => {
         email,
         rate: randomInt(1, 5),
         completedMeetings: randomInt(0, 200),
+        image: `https://avatars.dicebear.com/api/avataaars/${(Math.random() + 1)
+          .toString(36)
+          .substring(7)}.svg`,
         ...rest
       });
     } catch (e) {
@@ -86,10 +102,8 @@ const AuthProvider = ({ children }) => {
         password,
         returnSecureToken: true
       });
-      console.log(data);
       setTokens(data);
-      getUserData();
-
+      await getUserData();
     } catch (e) {
       const { code, message } = e.response.data.error;
       if (code === 400) {
@@ -102,6 +116,12 @@ const AuthProvider = ({ children }) => {
         }
       }
     }
+  }
+
+  function signOut() {
+    history.push("/");
+    setCurrentUser(null);
+    removeAuthData();
   }
 
   async function createUser(data) {
@@ -120,8 +140,8 @@ const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ signUp, signIn, currentUser }}>
-      {children}
+    <AuthContext.Provider value={{ signUp, signIn, signOut, currentUser }}>
+      {loading ? "Loading..." : children}
     </AuthContext.Provider>
   );
 };

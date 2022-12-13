@@ -6,7 +6,7 @@ import SignupForm from "../components/ui/signupForm";
 
 const Login = () => {
   const { type } = useParams();
-  const [formType, setFormType] = useState(type === "login" ? type : "signup");
+  const [formType, setFormType] = useState(type === "signup" ? type : "login");
   const toggleFormType = () => {
     setFormType((prev) => (prev === "signup" ? "login" : "signup"));
   };

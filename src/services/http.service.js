@@ -2,7 +2,12 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import cfg from "../config";
 import { httpAuth } from "../hooks/useAuth";
-import { getRefreshToken, getTokenExpiresIn } from "./localStorage.service";
+import {
+  getAccessToken,
+  getRefreshToken,
+  getTokenExpiresIn,
+  setTokens
+} from "./localStorage.service";
 
 const httpInstance = axios.create({
   baseURL: cfg.API_URL
@@ -41,14 +46,24 @@ httpInstance.interceptors.request.use(
 
       const expiresIn = getTokenExpiresIn();
       const refreshToken = getRefreshToken();
-      if (refreshToken && expiresIn > Date.now()) {
+      if (refreshToken && expiresIn < Date.now()) {
         const { data } = await httpAuth.post("token", {
           grant_type: "refresh_token",
           refresh_token: refreshToken
         });
-        console.log(data);
+        setTokens({
+          refreshToken: data.refresh_token,
+          idToken: data.id_token,
+          expiresIn: data.expires_in,
+          localId: data.user_id
+        });
       }
     }
+    const accessToken = getAccessToken();
+    if (accessToken) {
+      config.params = { ...config.params, auth: accessToken };
+    }
+
     return config;
   },
   (error) => Promise.reject(error)

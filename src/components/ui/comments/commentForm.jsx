@@ -1,30 +1,15 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import SelectField from "../../common/forms/selectField";
-import API from "../../../api";
-import Loader from "../../common/loader";
 import TextArea from "../../common/forms/textArea";
 import { validator } from "../../../utils/validator";
 
-const initValues = {
-  userId: "",
-  content: ""
-};
-
 const CommentForm = ({ onSubmit }) => {
-  const [users, setUsers] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [valid, setValid] = useState(true);
 
-  const [values, setValues] = useState(initValues);
+  const [content, setContent] = useState("");
 
   const validatorConfig = {
-    userId: {
-      isRequired: {
-        message: "Необходимо выбрать автора"
-      }
-    },
     content: {
       isRequired: {
         message: "Поле не может быть пустым"
@@ -33,35 +18,20 @@ const CommentForm = ({ onSubmit }) => {
   };
 
   const validate = () => {
-    const errors = validator(values, validatorConfig);
+    const errors = validator({ content }, validatorConfig);
     setErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
-  useEffect(() => {
-    setIsLoading(true);
-    API.users
-      .fetchAll()
-      .then((data) => {
-        setUsers(
-          Object.keys(data).map((professionName) => ({
-            label: data[professionName].name,
-            value: data[professionName]._id
-          }))
-        );
-      })
-      .finally(() => setIsLoading(false));
-  }, []);
-
-  const handleChange = ({ name, value }) => {
-    setValues((prev) => ({ ...prev, [name]: value }));
+  const handleChange = ({ value }) => {
+    setContent(value);
   };
 
   useEffect(() => {
     if (!valid) {
       setValid(validate());
     }
-  }, [values]);
+  }, [content]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -69,9 +39,9 @@ const CommentForm = ({ onSubmit }) => {
     setValid(isValid);
     if (!isValid) return null;
 
-    onSubmit(values);
+    onSubmit(content);
 
-    setValues(initValues);
+    setContent("");
   };
 
   return (
@@ -79,26 +49,10 @@ const CommentForm = ({ onSubmit }) => {
       <div>
         <h2>Новый комментарий</h2>
         <form onSubmit={handleSubmit}>
-          <>
-            {isLoading ? (
-              <Loader />
-            ) : (
-              <SelectField
-                label="Автор"
-                name="userId"
-                defaultOption="Выберите пользователя..."
-                value={values.userId}
-                error={errors.userId}
-                options={users}
-                onChange={handleChange}
-              />
-            )}
-          </>
-
           <TextArea
             label={"Сообщение"}
             name="content"
-            value={values.content}
+            value={content}
             onChange={handleChange}
             error={errors.content}
             rows={3}

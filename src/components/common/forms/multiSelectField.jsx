@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import PropTypes from "prop-types";
 
@@ -21,6 +21,10 @@ const MultiSelectField = ({
   }
 
   const [values, setValues] = useState(defaultValue || []);
+
+  useEffect(() => {
+    setValues(defaultValue);
+  }, [defaultValue]);
 
   const handleChange = (value) => {
     const allSelected = value.find((option) => option.value === "all");

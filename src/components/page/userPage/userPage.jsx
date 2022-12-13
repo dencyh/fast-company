@@ -1,25 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
-import API from "../../../api";
+import { useUser } from "../../../hooks/useUsers";
 import Loader from "../../common/loader";
 import UserCard from "../../ui/userProfile";
 
 const User = () => {
   const { id } = useParams();
-  const [user, setUser] = useState();
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState();
 
-  useEffect(() => {
-    API.users
-      .getById(id)
-      .then((data) => setUser(data))
-      .catch((e) => console.log(setError(e)))
-      .finally(() => setIsLoading(false));
-  }, [id]);
+  const { getUserById } = useUser();
+  const user = getUserById(id);
 
-  if (error) return <p className="badge bg-danger fs-5">{error.toString()}</p>;
-  if (isLoading || !user) return <Loader />;
+  if (!user) return <Loader />;
   return <UserCard user={user} />;
 };
 

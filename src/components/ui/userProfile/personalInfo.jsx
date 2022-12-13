@@ -1,42 +1,46 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { useHistory } from "react-router-dom";
+import { useAuth } from "../../../hooks/useAuth";
 
-const PersonalInfo = ({ _id, name, profession, rate }) => {
+const PersonalInfo = ({ user }) => {
   const history = useHistory();
+
+  const { currentUser } = useAuth();
+
   const handleEdit = () => {
-    history.push(`/users/${_id}/edit`);
+    history.push(`/users/${user._id}/edit`);
   };
   return (
     <div className="card mb-3">
       <div className="card-body">
-        <button
-          className="position-absolute top-0 end-0 btn btn-light btn-sm"
-          onClick={handleEdit}
-        >
-          <i className="bi bi-gear"></i>
-        </button>
+        {currentUser._id === user._id && (
+          <button
+            className="position-absolute top-0 end-0 btn btn-light btn-sm"
+            onClick={handleEdit}
+            aria-label="settings button"
+          >
+            <i className="bi bi-gear"></i>
+          </button>
+        )}
+
         <div className="d-flex flex-column align-items-center text-center position-relative">
           <img
-            src={`https://avatars.dicebear.com/api/avataaars/${(
-              Math.random() + 1
-            )
-              .toString(36)
-              .substring(7)}.svg`}
+            src={user.image}
             className="rounded-circle"
             alt="avatar"
             width="150"
           />
           <div className="mt-3">
             <h4>{name}</h4>
-            <p className="text-secondary mb-1">{profession}</p>
+            <p className="text-secondary mb-1">{user.profession}</p>
             <div className="text-muted">
               <i
                 className="bi bi-caret-down-fill text-primary"
                 role="button"
               ></i>
               <i className="bi bi-caret-up text-secondary" role="button"></i>
-              <span className="ms-2">{rate}</span>
+              <span className="ms-2">{user.rate}</span>
             </div>
           </div>
         </div>
@@ -46,10 +50,7 @@ const PersonalInfo = ({ _id, name, profession, rate }) => {
 };
 
 PersonalInfo.propTypes = {
-  _id: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  profession: PropTypes.string.isRequired,
-  rate: PropTypes.number.isRequired
+  user: PropTypes.object
 };
 
 export default PersonalInfo;

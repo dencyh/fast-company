@@ -29,9 +29,10 @@ export const QualitiesProvider = ({ children }) => {
     try {
       const { content } = await qualityService.get();
       setQualities(content);
-      setIsLoading(false);
     } catch (error) {
       errorCatcher(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
