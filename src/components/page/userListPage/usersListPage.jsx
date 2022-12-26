@@ -7,21 +7,20 @@ import Loader from "../../common/loader";
 import UserTable from "../../ui/userTable";
 import _ from "lodash";
 import TextField from "../../common/forms/textField";
-import { useUser } from "../../../hooks/useUsers";
-import { useAuth } from "../../../hooks/useAuth";
 import { useSelector } from "react-redux";
 import {
   selectAllProfessions,
   selectProfessionsLoading
 } from "../../../redux/professionsSlice";
+import { selectAllUsers, selectCurrentUser } from "../../../redux/usersSlice";
 
 const UsersListPage = () => {
-  const { users } = useUser();
+  const users = useSelector(selectAllUsers);
 
   const professions = useSelector(selectAllProfessions);
   const professionsLoading = useSelector(selectProfessionsLoading);
 
-  const { currentUser } = useAuth();
+  const currentUser = useSelector(selectCurrentUser);
 
   const [selectedProf, setSelectedProf] = useState(null);
   const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });

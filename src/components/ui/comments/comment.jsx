@@ -2,13 +2,12 @@ import React from "react";
 import PropTypes from "prop-types";
 import { formatCommentTime } from "../../../utils/timeFromNow";
 import CommentPlaceholder from "./commentPlaceholder";
-import { useUser } from "../../../hooks/useUsers";
-import { useAuth } from "../../../hooks/useAuth";
+import { useSelector } from "react-redux";
+import { selectCurrentUser, selectUserById } from "../../../redux/usersSlice";
 
 const Comment = ({ comment, onDelete }) => {
-  const { getUserById } = useUser();
-  const user = getUserById(comment.userId);
-  const { currentUser } = useAuth();
+  const user = useSelector(selectUserById(comment.userId));
+  const currentUser = useSelector(selectCurrentUser);
 
   const commentAuthor = currentUser._id === comment.userId;
   const pageOwner = currentUser._id === comment.pageId;

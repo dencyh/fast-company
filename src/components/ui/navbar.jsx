@@ -1,10 +1,11 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
+import { selectCurrentUser } from "../../redux/usersSlice";
 import NavProfile from "./navProfile";
 
 const Navbar = () => {
-  const { currentUser } = useAuth();
+  const currentUser = useSelector(selectCurrentUser);
 
   const location = useLocation();
   return (

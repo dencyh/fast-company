@@ -5,9 +5,8 @@ import SelectField from "../common/forms/selectField";
 import RadioField from "../common/forms/radioField";
 import MultiSelectField from "../common/forms/multiSelectField";
 import CheckboxField from "../common/forms/checkboxField";
-import { useAuth } from "../../hooks/useAuth";
 import { useHistory } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   selectAllQualities,
   selectQualitiesLoading
@@ -17,8 +16,11 @@ import {
   selectAllProfessions,
   selectProfessionsLoading
 } from "../../redux/professionsSlice";
+import { signUp } from "../../redux/usersSlice";
 
 const SignUpForm = () => {
+  const dispatch = useDispatch();
+
   const history = useHistory();
   const [values, setValues] = useState({
     name: "",
@@ -30,7 +32,6 @@ const SignUpForm = () => {
     license: false
   });
 
-  const { signUp } = useAuth();
   const qualities = useSelector(selectAllQualities);
   const qualitiesLoading = useSelector(selectQualitiesLoading);
   const qualitiesList = qualities.map((q) => ({
@@ -121,7 +122,8 @@ const SignUpForm = () => {
     };
 
     try {
-      await signUp(data);
+      dispatch(signUp(data));
+      // await signUp(data);
       history.push("/");
     } catch (e) {
       setErrors(e);

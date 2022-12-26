@@ -1,9 +1,11 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
 import PropTypes from "prop-types";
-import { useAuth } from "../../hooks/useAuth";
+import { selectCurrentUser } from "../../redux/usersSlice";
+import { useSelector } from "react-redux";
 function ProtectedRoute({ component: Component, children, ...rest }) {
-  const { currentUser } = useAuth();
+  const currentUser = useSelector(selectCurrentUser);
+
   return (
     <Route
       {...rest}

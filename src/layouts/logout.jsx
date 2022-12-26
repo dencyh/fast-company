@@ -1,9 +1,7 @@
 import React, { useEffect } from "react";
-import { useAuth } from "../hooks/useAuth";
+import { signOut } from "../redux/usersSlice";
 
 const Logout = () => {
-  const { signOut } = useAuth();
-
   useEffect(() => {
     signOut();
   }, []);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
+import { signIn } from "../../redux/usersSlice";
 import { validator } from "../../utils/validator";
 import CheckboxField from "../common/forms/checkboxField";
 import TextField from "../common/forms/textField";
@@ -12,9 +13,8 @@ const initValues = {
 };
 
 const LoginForm = () => {
+  const dispatch = useDispatch();
   const history = useHistory();
-
-  const { signIn } = useAuth();
 
   const [values, setValues] = useState(initValues);
 
@@ -66,7 +66,7 @@ const LoginForm = () => {
     const isValid = validate();
     if (!isValid) return console.log("Error");
     try {
-      await signIn(values);
+      dispatch(signIn(values));
       const toGo = history.location.state?.from.pathname || "/";
       history.push(toGo);
     } catch (e) {

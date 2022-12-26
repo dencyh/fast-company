@@ -1,12 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { useHistory } from "react-router-dom";
-import { useAuth } from "../../../hooks/useAuth";
+import { selectCurrentUser } from "../../../redux/usersSlice";
+import { useSelector } from "react-redux";
 
 const PersonalInfo = ({ user }) => {
   const history = useHistory();
 
-  const { currentUser } = useAuth();
+  const currentUser = useSelector(selectCurrentUser);
 
   const handleEdit = () => {
     history.push(`/users/${user._id}/edit`);
