@@ -6,7 +6,6 @@ import CommentPlaceholder from "./commentPlaceholder";
 const dummyComments = Array(3)
   .fill(0)
   .map((_, i) => i);
-console.log(dummyComments);
 
 const CommentsList = ({ comments, onDelete, isLoading }) => {
   return (

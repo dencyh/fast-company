@@ -71,7 +71,7 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const isValid = validate();
-    if (!isValid) return console.log("Error");
+    if (!isValid) return console.error("Error");
     try {
       const redirect = history.location.state?.from.pathname || "/";
       dispatch(signIn({ payload: values, redirect }));

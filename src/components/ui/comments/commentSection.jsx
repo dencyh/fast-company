@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo } from "react";
 import CommentForm from "./commentForm";
 import CommentsList from "./commentsList";
-import { useComments } from "../../../hooks/useComments";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  createComment,
+  deleteComment,
   loadComments,
   selectAllComments,
   selectCommentsLoading
@@ -27,16 +28,12 @@ const CommentSection = () => {
     [comments]
   );
 
-  const { deleteComment } = useComments();
-
-  const { createComment } = useComments();
-
   const handleDeleteComment = async (commentId) => {
-    deleteComment(commentId);
+    dispatch(deleteComment(commentId));
   };
 
   const handleSubmit = (data) => {
-    createComment(data);
+    dispatch(createComment({ content: data, id }));
   };
 
   return (

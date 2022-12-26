@@ -74,7 +74,6 @@ const UsersListPage = () => {
     //     }
     //   })
     // );
-    console.log(users);
   }
 
   function handlePageChange(page) {
