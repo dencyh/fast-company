@@ -21,7 +21,6 @@ const UserProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    console.log(currentUser);
     setUsers((prev) =>
       prev.map((user) => (user._id === currentUser._id ? currentUser : user))
     );

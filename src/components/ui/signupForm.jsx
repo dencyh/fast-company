@@ -5,10 +5,15 @@ import SelectField from "../common/forms/selectField";
 import RadioField from "../common/forms/radioField";
 import MultiSelectField from "../common/forms/multiSelectField";
 import CheckboxField from "../common/forms/checkboxField";
-import { useQualities } from "../../hooks/useQualities";
 import { useProfessions } from "../../hooks/useProfessions";
 import { useAuth } from "../../hooks/useAuth";
 import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
+import {
+  selectAllQualities,
+  selectQualitiesLoading
+} from "../../redux/qualitiesSlice";
+import Loader from "../common/loader";
 
 const SignUpForm = () => {
   const history = useHistory();
@@ -23,8 +28,8 @@ const SignUpForm = () => {
   });
 
   const { signUp } = useAuth();
-
-  const { qualities } = useQualities();
+  const qualities = useSelector(selectAllQualities);
+  const qualitiesLoading = useSelector(selectQualitiesLoading);
   const qualitiesList = qualities.map((q) => ({
     label: q.name,
     value: q._id
@@ -121,6 +126,8 @@ const SignUpForm = () => {
   };
 
   const isValid = Object.keys(errors).length === 0;
+
+  if (qualitiesLoading) return <Loader />;
   return (
     <form onSubmit={handleSubmit}>
       <TextField

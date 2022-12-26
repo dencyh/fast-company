@@ -6,11 +6,16 @@ import RadioField from "../../common/forms/radioField";
 import MultiSelectField from "../../common/forms/multiSelectField";
 import { useParams, useHistory } from "react-router-dom";
 import Loader from "../../common/loader";
-import { useQualities } from "../../../hooks/useQualities";
 import { useProfessions } from "../../../hooks/useProfessions";
 import { useAuth } from "../../../hooks/useAuth";
 import { selectFormat } from "../../../utils/selectFormat";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+import {
+  selectAllQualities,
+  selectQualitiesLoading,
+  selectQualitiesByIds
+} from "../../../redux/qualitiesSlice";
 
 const UserEditPage = () => {
   const { id: userId } = useParams();
@@ -28,11 +33,12 @@ const UserEditPage = () => {
   const { currentUser } = useAuth();
   if (!currentUser) return <Loader />;
   const { professions, isLoading: loadingProfessions } = useProfessions();
-  const {
-    qualities,
-    getUserQualities,
-    isLoading: loadingQualities
-  } = useQualities();
+
+  const qualities = useSelector(selectAllQualities);
+  const qualitiesLoading = useSelector(selectQualitiesLoading);
+  const userQualities = useSelector(
+    selectQualitiesByIds(currentUser.qualities)
+  );
 
   const professionsTransformed = useMemo(
     () => selectFormat(professions),
@@ -50,7 +56,7 @@ const UserEditPage = () => {
       email: currentUser.email,
       profession: currentUser.profession,
       sex: currentUser.sex,
-      qualities: selectFormat(getUserQualities(currentUser.qualities))
+      qualities: selectFormat(userQualities)
     });
   }, [qualities]);
 
@@ -124,7 +130,7 @@ const UserEditPage = () => {
           onSubmit={handleSubmit}
           className="col-6 mx-auto px-5 py-4 shadow"
         >
-          {loadingQualities || loadingProfessions ? (
+          {qualitiesLoading || loadingProfessions ? (
             <Loader />
           ) : (
             <>

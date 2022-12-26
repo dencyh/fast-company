@@ -15,7 +15,7 @@ export const QualitiesProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    getQualities();
+    // getQualities();
   }, []);
 
   useEffect(() => {
