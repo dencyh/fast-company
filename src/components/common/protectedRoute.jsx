@@ -1,15 +1,16 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
 import PropTypes from "prop-types";
-import { useAuth } from "../../hooks/useAuth";
+import { selectIsLogged } from "../../redux/usersSlice";
+import { useSelector } from "react-redux";
 function ProtectedRoute({ component: Component, children, ...rest }) {
-  const { currentUser } = useAuth();
+  const isLogged = useSelector(selectIsLogged);
+
   return (
     <Route
       {...rest}
       render={(props) => {
-        if (!currentUser) {
-          console.log(currentUser);
+        if (!isLogged) {
           return (
             <Redirect
               to={{

@@ -1,12 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { useHistory } from "react-router-dom";
-import { useAuth } from "../../../hooks/useAuth";
+import { selectCurrentUserId } from "../../../redux/usersSlice";
+import { useSelector } from "react-redux";
 
 const PersonalInfo = ({ user }) => {
   const history = useHistory();
 
-  const { currentUser } = useAuth();
+  const currentUserId = useSelector(selectCurrentUserId);
 
   const handleEdit = () => {
     history.push(`/users/${user._id}/edit`);
@@ -14,7 +15,7 @@ const PersonalInfo = ({ user }) => {
   return (
     <div className="card mb-3">
       <div className="card-body">
-        {currentUser._id === user._id && (
+        {currentUserId === user._id && (
           <button
             className="position-absolute top-0 end-0 d-flex justify-content-center align-items middle btn btn-md"
             style={{ zIndex: 1000 }}

@@ -1,19 +1,39 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import CommentForm from "./commentForm";
 import CommentsList from "./commentsList";
-import { useComments } from "../../../hooks/useComments";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  createComment,
+  deleteComment,
+  loadComments,
+  selectAllComments,
+  selectCommentsLoading
+} from "../../../redux/commentsSlice";
+import { useParams } from "react-router-dom";
 
 const CommentSection = () => {
-  const { comments, deleteComment } = useComments();
+  const dispatch = useDispatch();
 
-  const { createComment } = useComments();
+  const { id } = useParams();
+
+  useEffect(() => {
+    dispatch(loadComments(id));
+  }, [id, dispatch]);
+
+  const comments = useSelector(selectAllComments);
+  const commentsLoading = useSelector(selectCommentsLoading);
+
+  const sortedComments = useMemo(
+    () => comments.slice(0).sort((a, b) => b.createdAt - a.createdAt),
+    [comments]
+  );
 
   const handleDeleteComment = async (commentId) => {
-    deleteComment(commentId);
+    dispatch(deleteComment(commentId));
   };
 
   const handleSubmit = (data) => {
-    createComment(data);
+    dispatch(createComment({ content: data, id }));
   };
 
   return (
@@ -25,9 +45,11 @@ const CommentSection = () => {
       </div>
 
       <div className="card mb-3">
-        {comments && (
-          <CommentsList comments={comments} onDelete={handleDeleteComment} />
-        )}
+        <CommentsList
+          comments={sortedComments}
+          isLoading={commentsLoading}
+          onDelete={handleDeleteComment}
+        />
       </div>
     </div>
   );

@@ -6,15 +6,23 @@ import RadioField from "../../common/forms/radioField";
 import MultiSelectField from "../../common/forms/multiSelectField";
 import { useParams, useHistory } from "react-router-dom";
 import Loader from "../../common/loader";
-import { useQualities } from "../../../hooks/useQualities";
-import { useProfessions } from "../../../hooks/useProfessions";
-import { useAuth } from "../../../hooks/useAuth";
 import { selectFormat } from "../../../utils/selectFormat";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectAllQualities,
+  selectQualitiesLoading,
+  selectQualitiesByIds
+} from "../../../redux/qualitiesSlice";
+import {
+  selectAllProfessions,
+  selectProfessionsLoading
+} from "../../../redux/professionsSlice";
+import { selectCurrentUser, updateUser } from "../../../redux/usersSlice";
 
 const UserEditPage = () => {
+  const dispatch = useDispatch();
   const { id: userId } = useParams();
-  const { updateUser } = useAuth();
   const history = useHistory();
   const [errors, setErrors] = useState({});
   const [values, setValues] = useState({
@@ -25,14 +33,18 @@ const UserEditPage = () => {
     qualities: []
   });
 
-  const { currentUser } = useAuth();
+  const currentUser = useSelector(selectCurrentUser);
+
   if (!currentUser) return <Loader />;
-  const { professions, isLoading: loadingProfessions } = useProfessions();
-  const {
-    qualities,
-    getUserQualities,
-    isLoading: loadingQualities
-  } = useQualities();
+
+  const professions = useSelector(selectAllProfessions);
+  const professionsLoading = useSelector(selectProfessionsLoading);
+
+  const qualities = useSelector(selectAllQualities);
+  const qualitiesLoading = useSelector(selectQualitiesLoading);
+  const userQualities = useSelector(
+    selectQualitiesByIds(currentUser.qualities)
+  );
 
   const professionsTransformed = useMemo(
     () => selectFormat(professions),
@@ -50,7 +62,7 @@ const UserEditPage = () => {
       email: currentUser.email,
       profession: currentUser.profession,
       sex: currentUser.sex,
-      qualities: selectFormat(getUserQualities(currentUser.qualities))
+      qualities: selectFormat(userQualities)
     });
   }, [qualities]);
 
@@ -99,12 +111,13 @@ const UserEditPage = () => {
     const isValid = validate();
     if (!isValid) return;
     const updatedUser = {
+      _id: userId,
       ...values,
       qualities: values.qualities.map((qual) => qual.value)
     };
 
     try {
-      await updateUser(updatedUser);
+      dispatch(updateUser(updatedUser));
       history.replace(`/users/${userId}`);
     } catch (e) {
       toast.error(e.message);
@@ -124,7 +137,7 @@ const UserEditPage = () => {
           onSubmit={handleSubmit}
           className="col-6 mx-auto px-5 py-4 shadow"
         >
-          {loadingQualities || loadingProfessions ? (
+          {qualitiesLoading || professionsLoading ? (
             <Loader />
           ) : (
             <>

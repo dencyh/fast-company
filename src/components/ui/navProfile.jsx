@@ -1,12 +1,14 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
+import { selectCurrentUser } from "../../redux/usersSlice";
 
 const NavProfile = () => {
-  const { currentUser } = useAuth();
+  const currentUser = useSelector(selectCurrentUser);
   const [show, setShow] = useState(false);
   const toggleMenu = () => setShow((prev) => !prev);
 
+  if (!currentUser) return <div>Loading...</div>;
   return (
     <div className="dropdown">
       <div

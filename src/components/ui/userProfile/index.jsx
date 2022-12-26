@@ -4,7 +4,6 @@ import PersonalInfo from "./personalInfo";
 import QualitiesCard from "./qualitiesCard";
 import MeetingsCard from "./meetingsCard";
 import CommentSection from "../comments/commentSection";
-import CommentsProvider from "../../../hooks/useComments";
 
 const UserCard = ({ user }) => {
   if (!user) return null;
@@ -17,9 +16,7 @@ const UserCard = ({ user }) => {
           <QualitiesCard qualities={user.qualities} />
           <MeetingsCard meetings={user.completedMeetings} />
         </div>
-        <CommentsProvider>
-          <CommentSection />
-        </CommentsProvider>
+        <CommentSection />
       </div>
     </div>
   );

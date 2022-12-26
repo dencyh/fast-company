@@ -7,14 +7,20 @@ import Loader from "../../common/loader";
 import UserTable from "../../ui/userTable";
 import _ from "lodash";
 import TextField from "../../common/forms/textField";
-import { useUser } from "../../../hooks/useUsers";
-import { useProfessions } from "../../../hooks/useProfessions";
-import { useAuth } from "../../../hooks/useAuth";
+import { useSelector } from "react-redux";
+import {
+  selectAllProfessions,
+  selectProfessionsLoading
+} from "../../../redux/professionsSlice";
+import { selectAllUsers, selectCurrentUserId } from "../../../redux/usersSlice";
 
 const UsersListPage = () => {
-  const { users } = useUser();
-  const { professions, loading: professionsLoading } = useProfessions();
-  const { currentUser } = useAuth();
+  const users = useSelector(selectAllUsers);
+
+  const professions = useSelector(selectAllProfessions);
+  const professionsLoading = useSelector(selectProfessionsLoading);
+
+  const currentUserId = useSelector(selectCurrentUserId);
 
   const [selectedProf, setSelectedProf] = useState(null);
   const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });
@@ -37,7 +43,7 @@ const UsersListPage = () => {
       ? data.filter((user) => user.profession._id === selectedProf._id)
       : data;
 
-    return filteredUsers.filter((user) => user._id !== currentUser._id);
+    return filteredUsers.filter((user) => user._id !== currentUserId);
   }
 
   const filteredUsers = filterUsers(users);
@@ -56,9 +62,7 @@ const UsersListPage = () => {
     setCurrentPage(1);
   }, [selectedProf]);
 
-  function handleDeletion(userId) {
-    console.log(userId);
-  }
+  function handleDeletion(userId) {}
 
   function handleBookmark(id) {
     // setUsers((prev) =>
@@ -70,7 +74,6 @@ const UsersListPage = () => {
     //     }
     //   })
     // );
-    console.log(users);
   }
 
   function handlePageChange(page) {

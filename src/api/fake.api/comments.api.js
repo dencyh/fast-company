@@ -51,7 +51,6 @@ const add = (data) =>
         _id: Math.random().toString(36).substr(2, 9)
       };
       comments.push(newComment);
-      console.log(comments.filter((comment) => comment.userId === data.pageId));
       localStorage.setItem("comments", JSON.stringify(comments));
       resolve(newComment);
     }, 200);

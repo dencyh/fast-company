@@ -1,17 +1,15 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { formatCommentTime } from "../../../utils/timeFromNow";
-import CommentPlaceholder from "./commentPlaceholder";
-import { useUser } from "../../../hooks/useUsers";
-import { useAuth } from "../../../hooks/useAuth";
+import { useSelector } from "react-redux";
+import { selectCurrentUserId, selectUserById } from "../../../redux/usersSlice";
 
 const Comment = ({ comment, onDelete }) => {
-  const { getUserById } = useUser();
-  const user = getUserById(comment.userId);
-  const { currentUser } = useAuth();
+  const user = useSelector(selectUserById(comment.userId));
+  const currentUserId = useSelector(selectCurrentUserId);
 
-  const commentAuthor = currentUser._id === comment.userId;
-  const pageOwner = currentUser._id === comment.pageId;
+  const commentAuthor = currentUserId === comment.userId;
+  const pageOwner = currentUserId === comment.pageId;
   const canDeleteComment = commentAuthor || pageOwner;
 
   const handleDelete = async () => {
@@ -22,41 +20,37 @@ const Comment = ({ comment, onDelete }) => {
     <div className="bg-light card-body mb-3">
       <div className="row">
         <div className="col">
-          {!user ? (
-            <CommentPlaceholder />
-          ) : (
-            <div className="d-flex flex-start">
-              <img
-                src={user.image}
-                className="rounded-circle shadow-1-strong me-3"
-                alt="avatar"
-                width="65"
-                height="65"
-              />
-              <div className="flex-grow-1 flex-shrink-1">
-                <div className="mb-4">
-                  <div className="d-flex justify-content-between align-items-center">
-                    <p className="mb-1">
-                      {user.name}{" "}
-                      <span className="small">
-                        {formatCommentTime(comment.createdAt)}
-                      </span>
-                    </p>
-                    {canDeleteComment && (
-                      <button
-                        className="btn btn-sm text-primary d-flex align-items-center"
-                        onClick={handleDelete}
-                        aria-label="delete comment"
-                      >
-                        <i className="bi bi-x-lg"></i>
-                      </button>
-                    )}
-                  </div>
-                  <p className="small mb-0">{comment.content}</p>
+          <div className="d-flex flex-start">
+            <img
+              src={user.image}
+              className="rounded-circle shadow-1-strong me-3"
+              alt="avatar"
+              width="65"
+              height="65"
+            />
+            <div className="flex-grow-1 flex-shrink-1">
+              <div className="mb-4">
+                <div className="d-flex justify-content-between align-items-center">
+                  <p className="mb-1">
+                    {user.name}{" "}
+                    <span className="small">
+                      {formatCommentTime(comment.createdAt)}
+                    </span>
+                  </p>
+                  {canDeleteComment && (
+                    <button
+                      className="btn btn-sm text-primary d-flex align-items-center"
+                      onClick={handleDelete}
+                      aria-label="delete comment"
+                    >
+                      <i className="bi bi-x-lg"></i>
+                    </button>
+                  )}
                 </div>
+                <p className="small mb-0">{comment.content}</p>
               </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

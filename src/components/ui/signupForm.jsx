@@ -5,12 +5,22 @@ import SelectField from "../common/forms/selectField";
 import RadioField from "../common/forms/radioField";
 import MultiSelectField from "../common/forms/multiSelectField";
 import CheckboxField from "../common/forms/checkboxField";
-import { useQualities } from "../../hooks/useQualities";
-import { useProfessions } from "../../hooks/useProfessions";
-import { useAuth } from "../../hooks/useAuth";
 import { useHistory } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectAllQualities,
+  selectQualitiesLoading
+} from "../../redux/qualitiesSlice";
+import Loader from "../common/loader";
+import {
+  selectAllProfessions,
+  selectProfessionsLoading
+} from "../../redux/professionsSlice";
+import { signUp } from "../../redux/usersSlice";
 
 const SignUpForm = () => {
+  const dispatch = useDispatch();
+
   const history = useHistory();
   const [values, setValues] = useState({
     name: "",
@@ -22,15 +32,15 @@ const SignUpForm = () => {
     license: false
   });
 
-  const { signUp } = useAuth();
-
-  const { qualities } = useQualities();
+  const qualities = useSelector(selectAllQualities);
+  const qualitiesLoading = useSelector(selectQualitiesLoading);
   const qualitiesList = qualities.map((q) => ({
     label: q.name,
     value: q._id
   }));
 
-  const { professions } = useProfessions();
+  const professions = useSelector(selectAllProfessions);
+  const professionsLoading = useSelector(selectProfessionsLoading);
   const professionsList = professions.map((p) => ({
     label: p.name,
     value: p._id
@@ -112,15 +122,17 @@ const SignUpForm = () => {
     };
 
     try {
-      await signUp(data);
+      dispatch(signUp(data));
+      // await signUp(data);
       history.push("/");
     } catch (e) {
       setErrors(e);
-      console.log(e);
     }
   };
 
   const isValid = Object.keys(errors).length === 0;
+
+  if (qualitiesLoading || professionsLoading) return <Loader />;
   return (
     <form onSubmit={handleSubmit}>
       <TextField
