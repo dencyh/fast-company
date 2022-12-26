@@ -8,12 +8,19 @@ import UserTable from "../../ui/userTable";
 import _ from "lodash";
 import TextField from "../../common/forms/textField";
 import { useUser } from "../../../hooks/useUsers";
-import { useProfessions } from "../../../hooks/useProfessions";
 import { useAuth } from "../../../hooks/useAuth";
+import { useSelector } from "react-redux";
+import {
+  selectAllProfessions,
+  selectProfessionsLoading
+} from "../../../redux/professionsSlice";
 
 const UsersListPage = () => {
   const { users } = useUser();
-  const { professions, loading: professionsLoading } = useProfessions();
+
+  const professions = useSelector(selectAllProfessions);
+  const professionsLoading = useSelector(selectProfessionsLoading);
+
   const { currentUser } = useAuth();
 
   const [selectedProf, setSelectedProf] = useState(null);
@@ -56,9 +63,7 @@ const UsersListPage = () => {
     setCurrentPage(1);
   }, [selectedProf]);
 
-  function handleDeletion(userId) {
-    console.log(userId);
-  }
+  function handleDeletion(userId) {}
 
   function handleBookmark(id) {
     // setUsers((prev) =>

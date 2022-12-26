@@ -6,7 +6,6 @@ import RadioField from "../../common/forms/radioField";
 import MultiSelectField from "../../common/forms/multiSelectField";
 import { useParams, useHistory } from "react-router-dom";
 import Loader from "../../common/loader";
-import { useProfessions } from "../../../hooks/useProfessions";
 import { useAuth } from "../../../hooks/useAuth";
 import { selectFormat } from "../../../utils/selectFormat";
 import { toast } from "react-toastify";
@@ -16,6 +15,10 @@ import {
   selectQualitiesLoading,
   selectQualitiesByIds
 } from "../../../redux/qualitiesSlice";
+import {
+  selectAllProfessions,
+  selectProfessionsLoading
+} from "../../../redux/professionsSlice";
 
 const UserEditPage = () => {
   const { id: userId } = useParams();
@@ -32,7 +35,9 @@ const UserEditPage = () => {
 
   const { currentUser } = useAuth();
   if (!currentUser) return <Loader />;
-  const { professions, isLoading: loadingProfessions } = useProfessions();
+
+  const professions = useSelector(selectAllProfessions);
+  const professionsLoading = useSelector(selectProfessionsLoading);
 
   const qualities = useSelector(selectAllQualities);
   const qualitiesLoading = useSelector(selectQualitiesLoading);
@@ -130,7 +135,7 @@ const UserEditPage = () => {
           onSubmit={handleSubmit}
           className="col-6 mx-auto px-5 py-4 shadow"
         >
-          {qualitiesLoading || loadingProfessions ? (
+          {qualitiesLoading || professionsLoading ? (
             <Loader />
           ) : (
             <>

@@ -14,9 +14,9 @@ const QualitiesList = ({ qualities: qualitiesIds }) => {
   const qualities = useSelector(selectQualitiesByIds(qualitiesIds));
   const qualitiesLoading = useSelector(selectQualitiesLoading);
 
-  useEffect(() => {
-    dispatch(loadQualities());
-  }, []);
+  // useEffect(() => {
+  //   dispatch(loadQualities());
+  // }, []);
 
   if (qualitiesLoading) return "Loading...";
   return (

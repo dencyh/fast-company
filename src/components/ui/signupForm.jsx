@@ -5,7 +5,6 @@ import SelectField from "../common/forms/selectField";
 import RadioField from "../common/forms/radioField";
 import MultiSelectField from "../common/forms/multiSelectField";
 import CheckboxField from "../common/forms/checkboxField";
-import { useProfessions } from "../../hooks/useProfessions";
 import { useAuth } from "../../hooks/useAuth";
 import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -14,6 +13,10 @@ import {
   selectQualitiesLoading
 } from "../../redux/qualitiesSlice";
 import Loader from "../common/loader";
+import {
+  selectAllProfessions,
+  selectProfessionsLoading
+} from "../../redux/professionsSlice";
 
 const SignUpForm = () => {
   const history = useHistory();
@@ -35,7 +38,8 @@ const SignUpForm = () => {
     value: q._id
   }));
 
-  const { professions } = useProfessions();
+  const professions = useSelector(selectAllProfessions);
+  const professionsLoading = useSelector(selectProfessionsLoading);
   const professionsList = professions.map((p) => ({
     label: p.name,
     value: p._id
@@ -121,13 +125,12 @@ const SignUpForm = () => {
       history.push("/");
     } catch (e) {
       setErrors(e);
-      console.log(e);
     }
   };
 
   const isValid = Object.keys(errors).length === 0;
 
-  if (qualitiesLoading) return <Loader />;
+  if (qualitiesLoading || professionsLoading) return <Loader />;
   return (
     <form onSubmit={handleSubmit}>
       <TextField
