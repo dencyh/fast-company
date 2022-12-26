@@ -3,14 +3,14 @@ import PropTypes from "prop-types";
 import { formatCommentTime } from "../../../utils/timeFromNow";
 import CommentPlaceholder from "./commentPlaceholder";
 import { useSelector } from "react-redux";
-import { selectCurrentUser, selectUserById } from "../../../redux/usersSlice";
+import { selectCurrentUserId, selectUserById } from "../../../redux/usersSlice";
 
 const Comment = ({ comment, onDelete }) => {
   const user = useSelector(selectUserById(comment.userId));
-  const currentUser = useSelector(selectCurrentUser);
+  const currentUserId = useSelector(selectCurrentUserId);
 
-  const commentAuthor = currentUser._id === comment.userId;
-  const pageOwner = currentUser._id === comment.pageId;
+  const commentAuthor = currentUserId === comment.userId;
+  const pageOwner = currentUserId === comment.pageId;
   const canDeleteComment = commentAuthor || pageOwner;
 
   const handleDelete = async () => {

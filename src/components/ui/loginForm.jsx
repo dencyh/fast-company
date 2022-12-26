@@ -66,9 +66,8 @@ const LoginForm = () => {
     const isValid = validate();
     if (!isValid) return console.log("Error");
     try {
-      dispatch(signIn(values));
-      const toGo = history.location.state?.from.pathname || "/";
-      history.push(toGo);
+      const redirect = history.location.state?.from.pathname || "/";
+      dispatch(signIn({ payload: values, redirect }));
     } catch (e) {
       setValues(initValues);
     }

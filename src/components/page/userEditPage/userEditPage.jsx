@@ -34,6 +34,10 @@ const UserEditPage = () => {
   });
 
   const currentUser = useSelector(selectCurrentUser);
+  useEffect(() => {
+    console.log("rendered current user");
+  }, [currentUser]);
+
   if (!currentUser) return <Loader />;
 
   const professions = useSelector(selectAllProfessions);

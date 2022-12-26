@@ -1,11 +1,11 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
-import { selectCurrentUser } from "../../redux/usersSlice";
+import { selectIsLogged } from "../../redux/usersSlice";
 import NavProfile from "./navProfile";
 
 const Navbar = () => {
-  const currentUser = useSelector(selectCurrentUser);
+  const isLogged = useSelector(selectIsLogged);
 
   const location = useLocation();
   return (
@@ -30,7 +30,7 @@ const Navbar = () => {
           </Link>
         </div>
         <div className="navbar-nav">
-          {currentUser ? (
+          {isLogged ? (
             <NavProfile />
           ) : (
             <Link

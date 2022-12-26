@@ -1,7 +1,8 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 import cfg from "../config";
-import { httpAuth } from "../redux/usersSlice";
+import { httpAuth } from "./auth.service";
+
 import {
   getAccessToken,
   getRefreshToken,

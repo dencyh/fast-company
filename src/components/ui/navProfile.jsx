@@ -8,6 +8,7 @@ const NavProfile = () => {
   const [show, setShow] = useState(false);
   const toggleMenu = () => setShow((prev) => !prev);
 
+  if (!currentUser) return <div>Loading...</div>;
   return (
     <div className="dropdown">
       <div

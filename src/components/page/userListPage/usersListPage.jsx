@@ -12,7 +12,7 @@ import {
   selectAllProfessions,
   selectProfessionsLoading
 } from "../../../redux/professionsSlice";
-import { selectAllUsers, selectCurrentUser } from "../../../redux/usersSlice";
+import { selectAllUsers, selectCurrentUserId } from "../../../redux/usersSlice";
 
 const UsersListPage = () => {
   const users = useSelector(selectAllUsers);
@@ -20,7 +20,7 @@ const UsersListPage = () => {
   const professions = useSelector(selectAllProfessions);
   const professionsLoading = useSelector(selectProfessionsLoading);
 
-  const currentUser = useSelector(selectCurrentUser);
+  const currentUserId = useSelector(selectCurrentUserId);
 
   const [selectedProf, setSelectedProf] = useState(null);
   const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });
@@ -43,7 +43,7 @@ const UsersListPage = () => {
       ? data.filter((user) => user.profession._id === selectedProf._id)
       : data;
 
-    return filteredUsers.filter((user) => user._id !== currentUser._id);
+    return filteredUsers.filter((user) => user._id !== currentUserId);
   }
 
   const filteredUsers = filterUsers(users);

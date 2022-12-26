@@ -1,9 +1,12 @@
 import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { signOut } from "../redux/usersSlice";
 
 const Logout = () => {
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    signOut();
+    dispatch(signOut());
   }, []);
 
   return (
