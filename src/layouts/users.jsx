@@ -4,7 +4,6 @@ import UserPage from "../components/page/userPage";
 import UsersListPage from "../components/page/userListPage";
 import UserEditPage from "../components/page/userEditPage";
 import ProtectedRoute from "../components/common/protectedRoute";
-import Loader from "../components/common/loader";
 import UsersLoader from "../components/hoc/usersLoader";
 
 const Users = () => {

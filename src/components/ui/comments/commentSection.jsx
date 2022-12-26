@@ -1,10 +1,33 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import CommentForm from "./commentForm";
 import CommentsList from "./commentsList";
 import { useComments } from "../../../hooks/useComments";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  loadComments,
+  selectAllComments,
+  selectCommentsLoading
+} from "../../../redux/commentsSlice";
+import { useParams } from "react-router-dom";
 
 const CommentSection = () => {
-  const { comments, deleteComment } = useComments();
+  const dispatch = useDispatch();
+
+  const { id } = useParams();
+
+  useEffect(() => {
+    dispatch(loadComments(id));
+  }, [id, dispatch]);
+
+  const comments = useSelector(selectAllComments);
+  const commentsLoading = useSelector(selectCommentsLoading);
+
+  const sortedComments = useMemo(
+    () => comments.slice(0).sort((a, b) => b.createdAt - a.createdAt),
+    [comments]
+  );
+
+  const { deleteComment } = useComments();
 
   const { createComment } = useComments();
 
@@ -25,9 +48,11 @@ const CommentSection = () => {
       </div>
 
       <div className="card mb-3">
-        {comments && (
-          <CommentsList comments={comments} onDelete={handleDeleteComment} />
-        )}
+        <CommentsList
+          comments={sortedComments}
+          isLoading={commentsLoading}
+          onDelete={handleDeleteComment}
+        />
       </div>
     </div>
   );

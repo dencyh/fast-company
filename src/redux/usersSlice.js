@@ -1,4 +1,4 @@
-import { createAction, createSelector, createSlice } from "@reduxjs/toolkit";
+import { createSelector, createSlice } from "@reduxjs/toolkit";
 import userService from "../services/user.service";
 import {
   getAccessToken,
@@ -9,6 +9,7 @@ import {
 import { randomInt } from "../utils/randomInt";
 import { authService } from "../services/auth.service";
 import history from "../utils/history";
+import { generateAuthError } from "../utils/generateAuthError";
 
 const initialState = getAccessToken()
   ? {
@@ -48,6 +49,9 @@ const usersSlice = createSlice({
       state.error = action.payload;
       state.isLoading = false;
     },
+    authRequested: (state, action) => {
+      state.error = null;
+    },
     authRequestSuccess: (state, action) => {
       state.auth = action.payload;
       state.isLogged = true;
@@ -55,10 +59,13 @@ const usersSlice = createSlice({
     authRequestFailed: (state, action) => {
       state.error = action.payload;
     },
+    userCreateRequested: (state, action) => {
+      state.error = null;
+    },
     userCreated: (state, action) => {
       state.users.push(action.payload);
     },
-    userLoggedOut: (state, action) => {
+    userLoggedOut: (state) => {
       state.auth.userId = null;
       state.isLogged = false;
     },
@@ -70,26 +77,31 @@ const usersSlice = createSlice({
     },
     userUpdateFailed: (state, action) => {
       state.error = action.payload;
+    },
+    updateRequest: (state) => {
+      state.error = null;
+    },
+    userCreateFailed: (state, action) => {
+      state.error = action.payload;
     }
   }
 });
 
 const {
+  userCreateRequested,
+  userCreateFailed,
   usersReceived,
   usersRequested,
   usersRequestFailed,
+  authRequested,
   authRequestSuccess,
   authRequestFailed,
   userCreated,
   userLoggedOut,
+  updateRequest,
   userUpdated,
   userUpdateFailed
 } = usersSlice.actions;
-
-const userCreateRequested = createAction("user/createRequested");
-const authRequested = createAction("user/authRequested");
-const userCreateFailed = createAction("user/createFailed");
-const userUpdateRequest = createAction("user/updateRequest");
 
 export function loadUsers() {
   return async function (dispatch) {
@@ -98,7 +110,9 @@ export function loadUsers() {
       const { content } = await userService.get();
       dispatch(usersReceived(content));
     } catch (e) {
-      dispatch(usersRequestFailed(e));
+      const { message } = e.response.data.error;
+      const errorMessage = generateAuthError(message);
+      dispatch(usersRequestFailed(errorMessage));
     }
   };
 }
@@ -143,7 +157,9 @@ export function signUp(payload) {
         })
       );
     } catch (e) {
-      dispatch(authRequestFailed(e.message));
+      const { message } = e.response.data.error;
+      const errorMessage = generateAuthError(message);
+      dispatch(authRequestFailed(errorMessage));
     }
   };
 }
@@ -162,7 +178,9 @@ export function signIn({ payload, redirect }) {
       setTokens(data);
       history.push(redirect);
     } catch (e) {
-      dispatch(authRequestFailed(e.message));
+      const { message } = e.response.data.error;
+      const errorMessage = generateAuthError(message);
+      dispatch(authRequestFailed(errorMessage));
     }
   };
 }
@@ -177,7 +195,7 @@ export function signOut() {
 
 export function updateUser(payload) {
   return async function (dispatch, getState) {
-    dispatch(userUpdateRequest());
+    dispatch(updateRequest());
 
     const currentUser = getState().users.users.find(
       (user) => user._id === payload._id
@@ -196,12 +214,15 @@ export function updateUser(payload) {
 
       dispatch(userUpdated(content));
     } catch (e) {
-      dispatch(userUpdateFailed(e.message));
+      const { message } = e.response.data.error;
+      const errorMessage = generateAuthError(message);
+      dispatch(userUpdateFailed(errorMessage));
     }
   };
 }
 
 export const selectUsersLoading = (state) => state.users.isLoading;
+export const selectAuthError = (state) => state.users.error;
 
 export const selectAllUsers = (state) => state.users.users;
 

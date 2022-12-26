@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { signIn } from "../../redux/usersSlice";
+import { toast } from "react-toastify";
+import { selectAuthError, signIn } from "../../redux/usersSlice";
 import { validator } from "../../utils/validator";
 import CheckboxField from "../common/forms/checkboxField";
 import TextField from "../common/forms/textField";
@@ -15,6 +16,12 @@ const initValues = {
 const LoginForm = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+
+  const authError = useSelector(selectAuthError);
+
+  useEffect(() => {
+    toast.error(authError);
+  }, [authError]);
 
   const [values, setValues] = useState(initValues);
 
