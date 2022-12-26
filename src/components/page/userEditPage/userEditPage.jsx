@@ -34,9 +34,6 @@ const UserEditPage = () => {
   });
 
   const currentUser = useSelector(selectCurrentUser);
-  useEffect(() => {
-    console.log("rendered current user");
-  }, [currentUser]);
 
   if (!currentUser) return <Loader />;
 
@@ -114,6 +111,7 @@ const UserEditPage = () => {
     const isValid = validate();
     if (!isValid) return;
     const updatedUser = {
+      _id: userId,
       ...values,
       qualities: values.qualities.map((qual) => qual.value)
     };

@@ -61,6 +61,15 @@ const usersSlice = createSlice({
     userLoggedOut: (state, action) => {
       state.auth.userId = null;
       state.isLogged = false;
+    },
+    userUpdated: (state, action) => {
+      const newUserData = action.payload;
+      state.users = state.users.map((user) =>
+        user._id === newUserData._id ? { ...user, ...newUserData } : user
+      );
+    },
+    userUpdateFailed: (state, action) => {
+      state.error = action.payload;
     }
   }
 });
@@ -72,12 +81,15 @@ const {
   authRequestSuccess,
   authRequestFailed,
   userCreated,
-  userLoggedOut
+  userLoggedOut,
+  userUpdated,
+  userUpdateFailed
 } = usersSlice.actions;
 
 const userCreateRequested = createAction("user/createRequested");
 const authRequested = createAction("user/authRequested");
 const userCreateFailed = createAction("user/createFailed");
+const userUpdateRequest = createAction("user/updateRequest");
 
 export function loadUsers() {
   return async function (dispatch) {
@@ -165,10 +177,14 @@ export function signOut() {
 
 export function updateUser(payload) {
   return async function (dispatch, getState) {
-    const currentUser = getState().users.currentUser;
+    dispatch(userUpdateRequest());
+
+    const currentUser = getState().users.users.find(
+      (user) => user._id === payload._id
+    );
 
     try {
-      if (payload.email !== undefined && payload.email !== currentUser.email) {
+      if (payload.email !== currentUser.email) {
         await authService.updateEmail({
           email: payload.email
         });
@@ -178,9 +194,9 @@ export function updateUser(payload) {
         _id: currentUser._id
       });
 
-      // dispatch(currentUserUpdated({ ...currentUser, ...content }));
+      dispatch(userUpdated(content));
     } catch (e) {
-      dispatch(usersRequestFailed(e.message));
+      dispatch(userUpdateFailed(e.message));
     }
   };
 }
